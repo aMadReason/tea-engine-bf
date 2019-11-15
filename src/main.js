@@ -1,7 +1,7 @@
 import Vue from "vue";
 import App from "./App.vue";
 
-import { Game } from "./tea-engine/index";
+import { Game } from "./tea/index";
 //import { describe } from "./tea-engine/behaviours/describe";
 
 const gamedata = {
@@ -71,7 +71,7 @@ g.resolveGameData(gamedata);
 
 Vue.config.productionTip = false;
 
-Vue.use({ install: (Vue, opts) => (Vue.prototype.$game = g) });
+//Vue.use({ install: (Vue, opts) => (Vue.prototype.$game = g) });
 
 new Vue({
   data: () => ({

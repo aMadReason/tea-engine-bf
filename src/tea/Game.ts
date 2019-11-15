@@ -1,6 +1,6 @@
 import { iThing, iGame, iBehaviour, iThingData, iGameData } from "./types";
 import { ThingComposer } from "./index";
-import pubsub from "./pubsub";
+import pubsub from "./modules/pubsub";
 import describe from "./behaviours/describe";
 
 class Game implements iGame {
@@ -14,7 +14,6 @@ class Game implements iGame {
     this.things = things;
     //add default behaviours
     Game.defaultBehaviours.map(b => this.registerBehaviour(b));
-    //this.registerBehaviour(describe);
   }
 
   static get defaultBehaviours() {
@@ -70,7 +69,12 @@ class Game implements iGame {
   }
 
   resolveData(data: iThingData) {
-    return ThingComposer.resolveThingData(data, this.behaviourRegister, this);
+    return ThingComposer.resolveThingData(
+      data,
+      this.behaviourRegister,
+      pubsub,
+      this
+    );
   }
 
   // does some pre-processing on iThingData for things like default behaviours

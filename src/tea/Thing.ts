@@ -1,4 +1,4 @@
-import uuid from "./uuid";
+import uuid from "./modules/uuid";
 import { iThing, iProperties, iPubsub } from "./types";
 
 class Thing implements iThing {
