@@ -1,6 +1,7 @@
 import { iThing, iGame, iBehaviour, iThingData, iGameData } from "./types";
 import { ThingComposer } from "./index";
 import pubsub from "./modules/pubsub";
+import commandParser from "./modules/commandParser";
 import describe from "./behaviours/describe";
 
 class Game implements iGame {
@@ -14,6 +15,14 @@ class Game implements iGame {
     this.things = things;
     //add default behaviours
     Game.defaultBehaviours.map(b => this.registerBehaviour(b));
+  }
+
+  static get getPubs() {
+    return {
+      locationChange: "tea-location-change",
+      commandPriorCall: "tea-command-prior",
+      command: "tea-command"
+    };
   }
 
   static get defaultBehaviours() {
@@ -33,7 +42,7 @@ class Game implements iGame {
     this.locations.push(thing);
   }
 
-  getLocation(): iThing {
+  getActiveLocation(): iThing {
     return this.locations.find(i => i.key === this.location);
   }
 
@@ -48,7 +57,7 @@ class Game implements iGame {
 
     if (to && to.key !== from.key) {
       this.location = to.key;
-      pubsub.publish("tea-location-change", { from, to });
+      pubsub.publish(Game.getPubs.locationChange, { from, to });
     }
 
     if (!to && locations.length > 0) {
@@ -56,12 +65,46 @@ class Game implements iGame {
     }
   }
 
-  getThingsByLocationKey(key: String) {
+  /**
+   * Returns all Things in an location via a key
+   * @param key
+   */
+  getThingsByLocationKey(key: String): iThing[] {
     return this.things.filter(i => i.locationKey === key);
   }
 
-  getThings(locationKey: String = this.location) {
+  /**
+   * by default returns all things in the active location
+   * if a location key is passed it will return all things in there
+   * @param locationKey
+   */
+  getActiveThings(locationKey: String = this.location): iThing[] {
     return this.getThingsByLocationKey(locationKey);
+  }
+
+  /**
+   * searches all things for one with a matching key
+   * @param key
+   */
+  getThingByKey(key: String): iThing {
+    return this.things.find(i => i.key === key);
+  }
+
+  getThingsByNoun(noun: String, describedNoun: String = undefined) {
+    const things = this.getActiveThings();
+    return things.filter(t => {
+      const isDescribed = t.describedNoun === describedNoun;
+      const isNoun = noun && t.noun === noun;
+      if (describedNoun && isDescribed && isNoun) return true;
+      if (!describedNoun && isNoun) return true;
+    });
+  }
+
+  /**
+   * returns all things
+   */
+  getThings(): iThing[] {
+    return this.things;
   }
 
   registerBehaviour(behaviour: iBehaviour) {
@@ -109,6 +152,67 @@ class Game implements iGame {
     if (things) this.resolveThingDataList(things);
     if (locations) this.resolveLocationDataList(locations);
     this.setLocationByKey(location);
+  }
+
+  command(cmd: String) {
+    const parserResult = commandParser(cmd);
+    const { nouns, verbs, described } = parserResult;
+    const msg = [];
+    let txt = "";
+    let response = "";
+    const firstThings = this.getThingsByNoun(nouns[0], described[0]);
+    const secondThings = this.getThingsByNoun(nouns[1], described[1]);
+
+    if (firstThings.length === 0) {
+      txt = `There should be at least one noun.`;
+      if (!msg.includes(txt)) msg.push(txt);
+    }
+
+    if (verbs.length === 0) {
+      txt = `There should be at least one verb.`;
+      if (!msg.includes(txt)) msg.push(txt);
+    }
+
+    if (firstThings.length > 1) {
+      txt = `There are ${firstThings.length} things called "${nouns[0]}".`;
+      if (!msg.includes(txt)) msg.push(txt);
+    }
+
+    if (secondThings.length > 1) {
+      txt = `There are ${secondThings.length} things called "${nouns[1]}".`;
+      if (!msg.includes(txt)) msg.push(txt);
+    }
+
+    if (
+      firstThings.length === 1 &&
+      secondThings.length === 0 &&
+      verbs.length > 0
+    ) {
+      // simple
+      response = firstThings[0].callAction(verbs[0]);
+    }
+
+    if (firstThings.length === 1 && secondThings.length === 1) {
+      // complex
+    }
+
+    // find actions
+    // perform call
+
+    // pubsub.publish(Game.getPubs.commandPostCall, {
+    //   msg,
+    //   parserResult,
+    //   firstThings,
+    //   secondThings
+    // });
+
+    pubsub.publish(Game.getPubs.command, {
+      msg,
+      response,
+      parserResult,
+      firstThings,
+      secondThings
+    });
   }
 }
 export default Game;

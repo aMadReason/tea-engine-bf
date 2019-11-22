@@ -25,6 +25,22 @@ const gamedata = {
         descriptions: {
           default: "A shabby red book rests haphazardly on the ground."
         }
+      },
+      actions: {
+        read: "describe",
+        use: "describe",
+        look: "describe",
+        examine: "describe"
+      }
+    },
+    {
+      noun: "book",
+      locationKey: "cabin",
+      describedNoun: "green book",
+      properties: {
+        descriptions: {
+          default: "A shabby green book rests haphazardly on the ground."
+        }
       }
     },
     {

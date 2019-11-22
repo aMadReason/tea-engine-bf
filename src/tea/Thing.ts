@@ -59,6 +59,7 @@ class Thing implements iThing {
   callMethod(key: String, instance: iThing = this) {
     const method = this.methods.get(key);
     if (method) return method(instance);
+    return false;
   }
 
   setAction(verb: String, methodKey: String) {
@@ -70,6 +71,7 @@ class Thing implements iThing {
   callAction(verb: String) {
     const action = this.actions.get(verb);
     if (action) return this.callMethod(action);
+    return false;
   }
 }
 

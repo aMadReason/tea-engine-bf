@@ -25,6 +25,7 @@ export interface iThing {
     String | Number | String[] | Number[] | iProperties<String>
   >;
   actions: Map<String, String>; // maps verbs to method key
+  callAction: Function;
 }
 
 // matches json
