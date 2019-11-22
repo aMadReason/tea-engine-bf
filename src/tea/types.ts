@@ -26,6 +26,7 @@ export interface iThing {
   >;
   actions: Map<String, String>; // maps verbs to method key
   callAction: Function;
+  getActionKeys: Function;
 }
 
 // matches json

@@ -9,9 +9,12 @@ const types = [
 
 const plugin = {
   words: {
-    open: "Verb"
+    open: "Verb",
+    cup: "Noun",
+    golden: "Adjective"
   },
   patterns: {
+    "(it)": "#Ignore",
     "(light|mix)$": "#Noun",
     "^(light|mix)": "#Verb",
     "(#Conjunction|above|adjacent|beside|under|over|above|on|over|in|inside)":
@@ -40,7 +43,10 @@ export default function commandParser(input) {
     .match("#Verb")
     .not("(#Join")
     .out("array");
-  const nouns = doc.match("#Noun").out("array");
+  const nouns = doc
+    .not("#Ignore")
+    .match("#Noun")
+    .out("array");
   let described = doc
     .not("#Direction")
     .not("#Join")

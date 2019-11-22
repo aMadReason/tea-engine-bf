@@ -3,6 +3,7 @@ import App from "./App.vue";
 
 import { Game } from "./tea/index";
 //import { describe } from "./tea-engine/behaviours/describe";
+Vue.config.productionTip = false;
 
 const gamedata = {
   things: [
@@ -78,16 +79,7 @@ const gamedata = {
 };
 
 const g = new Game();
-//g.registerBehaviour(describe);
 g.resolveGameData(gamedata);
-
-//console.log(g.getLocation().callAction("describe"));
-
-//console.log(g.things[0].callMethod("describe"));
-
-Vue.config.productionTip = false;
-
-//Vue.use({ install: (Vue, opts) => (Vue.prototype.$game = g) });
 
 new Vue({
   data: () => ({

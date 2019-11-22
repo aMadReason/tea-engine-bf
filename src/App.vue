@@ -26,6 +26,8 @@
     <ul v-if="msg.length > 0">
       <li v-for="(i, idx) in msg" v-bind:key="idx">{{i}}</li>
     </ul>
+
+    <div>{{response}}</div>
   </div>
 </template>
 
@@ -37,7 +39,8 @@ export default {
   components: {},
   data: () => ({
     inputCommand: "",
-    msg: []
+    msg: [],
+    response: null
   }),
   computed: {
     game: function() {
@@ -66,6 +69,7 @@ export default {
     },
     handleCommand(data) {
       this.msg = data.msg;
+      this.response = data.response;
       console.log(data);
     }
   },

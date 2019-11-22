@@ -156,7 +156,7 @@ class Game implements iGame {
 
   command(cmd: String) {
     const parserResult = commandParser(cmd);
-    const { nouns, verbs, described } = parserResult;
+    const { nouns, verbs, described, command } = parserResult;
     const msg = [];
     let txt = "";
     let response = "";
@@ -190,6 +190,12 @@ class Game implements iGame {
     ) {
       // simple
       response = firstThings[0].callAction(verbs[0]);
+      if (!response) {
+        const actions = firstThings[0].getActionKeys();
+        response = `Unable to "${command}", valid actions are; ${actions.join(
+          ", "
+        )}.`;
+      }
     }
 
     if (firstThings.length === 1 && secondThings.length === 1) {

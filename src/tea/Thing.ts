@@ -68,6 +68,10 @@ class Thing implements iThing {
     return this;
   }
 
+  getActionKeys() {
+    return [...this.actions.keys()];
+  }
+
   callAction(verb: String) {
     const action = this.actions.get(verb);
     if (action) return this.callMethod(action);
