@@ -1,6 +1,6 @@
 import Vue from "vue";
 import App from "./App.vue";
-
+import travel from "./tea/behaviours/travel";
 import { Game } from "./tea/index";
 //import { describe } from "./tea-engine/behaviours/describe";
 Vue.config.productionTip = false;
@@ -59,6 +59,7 @@ const gamedata = {
     {
       key: "cabin",
       noun: "cabin",
+      behaviours: ["travel"],
       properties: {
         descriptions: {
           default: "The engine purrs constantly in the background. "
@@ -68,6 +69,7 @@ const gamedata = {
     {
       key: "deck",
       noun: "deck",
+      behaviours: ["travel"],
       properties: {
         descriptions: {
           default:
@@ -79,6 +81,7 @@ const gamedata = {
 };
 
 const g = new Game();
+g.registerBehaviour(travel);
 g.resolveGameData(gamedata);
 
 new Vue({

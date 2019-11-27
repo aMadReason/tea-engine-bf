@@ -1,10 +1,11 @@
 import uuid from "./modules/uuid";
-import { iThing, iProperties, iPubsub } from "./types";
+import { iThing, iProperties, iPubsub, iGame } from "./types";
 
 class Thing implements iThing {
   key: String;
   pubsub: iPubsub;
   noun: String;
+  game: iGame;
   locationKey: String;
   describedNoun: String;
   methods: Map<String, Function> = new Map();
@@ -17,12 +18,14 @@ class Thing implements iThing {
   constructor({
     noun,
     pubsub,
+    game,
     describedNoun = undefined,
     locationKey = undefined,
     key = uuid()
   }: {
     noun: String;
     pubsub: iPubsub;
+    game: iGame;
     describedNoun?: String;
     locationKey?: String;
     key?: String;
@@ -30,6 +33,7 @@ class Thing implements iThing {
     this.key = key;
     this.pubsub = pubsub;
     this.noun = noun;
+    this.game = game;
     this.locationKey = locationKey;
     this.describedNoun = describedNoun;
     return this;
@@ -72,7 +76,7 @@ class Thing implements iThing {
     return [...this.actions.keys()];
   }
 
-  callAction(verb: String) {
+  callAction(verb: String, instance: iThing = this) {
     const action = this.actions.get(verb);
     if (action) return this.callMethod(action);
     return false;

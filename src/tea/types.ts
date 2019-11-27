@@ -18,6 +18,7 @@ export interface iThing {
   pubsub: iPubsub;
   locationKey: String;
   noun: String;
+  game: iGame; // eslint-disable-line
   describedNoun: String;
   methods: Map<String, Function>;
   properties: Map<
@@ -56,6 +57,7 @@ export interface iGame {
   locations: Array<iThing>;
   things: Array<iThing>;
   behaviourRegister?: Map<String, iBehaviour>;
+  setLocationByKey: Function;
 }
 
 export interface iGameData {

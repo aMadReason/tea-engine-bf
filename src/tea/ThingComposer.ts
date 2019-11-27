@@ -24,21 +24,28 @@ class ThingComposer {
     data: iThingData,
     behaviourRegister: Map<String, iBehaviour>,
     pubsub: iPubsub,
-    Game: iGame
+    game: iGame
   ): Thing {
     const { noun, describedNoun, behaviours, locationKey, key } = data;
-    const thing = new Thing({ noun, describedNoun, locationKey, key, pubsub });
+    const thing = new Thing({
+      noun,
+      describedNoun,
+      locationKey,
+      key,
+      pubsub,
+      game
+    });
 
     // resolved behaviour
     if (behaviours) {
       behaviours.map(b => {
         const behaviour = behaviourRegister.get(b);
-        return ThingComposer.resolve(thing, behaviour, Game);
+        return ThingComposer.resolve(thing, behaviour, game);
       });
     }
 
     // resolved any Thing specifics, which take priority over behaviour
-    return ThingComposer.resolve(thing, data, Game);
+    return ThingComposer.resolve(thing, data, game);
   }
 }
 

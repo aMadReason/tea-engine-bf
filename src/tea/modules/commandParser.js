@@ -16,7 +16,7 @@ const plugin = {
   patterns: {
     "(it)": "#Ignore",
     "(light|mix)$": "#Noun",
-    "^(light|mix)": "#Verb",
+    "^(light|mix|move|shift)": "#Verb",
     "(#Conjunction|above|adjacent|beside|under|over|above|on|over|in|inside)":
       "#Join",
     "(north|east|south|west|left|right|up|down)": "#Direction",

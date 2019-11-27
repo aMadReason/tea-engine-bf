@@ -97,6 +97,18 @@ class Game implements iGame {
       const isNoun = noun && t.noun === noun;
       if (describedNoun && isDescribed && isNoun) return true;
       if (!describedNoun && isNoun) return true;
+      return false;
+    });
+  }
+
+  getLocationsByNoun(noun: String, describedNoun: String = undefined) {
+    const locations = this.getLocations();
+    return locations.filter(t => {
+      const isDescribed = t.describedNoun === describedNoun;
+      const isNoun = noun && t.noun === noun;
+      if (describedNoun && isDescribed && isNoun) return true;
+      if (!describedNoun && isNoun) return true;
+      return false;
     });
   }
 
@@ -105,6 +117,10 @@ class Game implements iGame {
    */
   getThings(): iThing[] {
     return this.things;
+  }
+
+  getLocations() {
+    return this.locations;
   }
 
   registerBehaviour(behaviour: iBehaviour) {
@@ -154,63 +170,111 @@ class Game implements iGame {
     this.setLocationByKey(location);
   }
 
-  command(cmd: String) {
-    const parserResult = commandParser(cmd);
-    const { nouns, verbs, described, command } = parserResult;
-    const msg = [];
-    let txt = "";
+  handleCommand(
+    type,
+    data: {
+      verb: String;
+      locations: iThing[];
+      firstThings: iThing[];
+      secondThings: iThing[];
+    }
+  ) {
+    const { verb, locations, firstThings, secondThings } = data;
     let response = "";
+
+    if (type === "nav") locations[0].callAction(verb);
+    if (type === "simple") firstThings[0].callAction(verb);
+  }
+
+  command(cmd: String, priorCall: Function = data => true) {
+    const parserResult = commandParser(cmd);
+    const { nouns, verbs, described } = parserResult;
+    const msg = [];
+    let response = "";
+    const verb = verbs[0];
+    const locations = this.getLocationsByNoun(nouns[0], described[0]);
     const firstThings = this.getThingsByNoun(nouns[0], described[0]);
     const secondThings = this.getThingsByNoun(nouns[1], described[1]);
 
-    if (firstThings.length === 0) {
-      txt = `There should be at least one noun.`;
-      if (!msg.includes(txt)) msg.push(txt);
+    const cmdTypes = {
+      nav: locations.length > 0,
+      simple: verb && firstThings.length > 0 && secondThings.length === 0,
+      complex: verb && firstThings.length > 0 && secondThings.length > 0
+    };
+
+    const cmdType = Object.keys(cmdTypes).find(k => cmdTypes[k] && k) || false;
+
+    const resume = priorCall({
+      msg,
+      verb,
+      firstThings,
+      secondThings,
+      locations
+    });
+
+    if (!resume) return; // if check intercepted exit
+
+    if (cmdType) {
+      this.handleCommand(cmdType, {
+        verb,
+        locations,
+        firstThings,
+        secondThings
+      });
     }
 
-    if (verbs.length === 0) {
-      txt = `There should be at least one verb.`;
-      if (!msg.includes(txt)) msg.push(txt);
-    }
+    // if(cmdType)
 
-    if (firstThings.length > 1) {
-      txt = `There are ${firstThings.length} things called "${nouns[0]}".`;
-      if (!msg.includes(txt)) msg.push(txt);
-    }
+    // if (firstThings.length === 0 && locations.length === 0) {
+    //   txt = `There should be at least one noun.`;
+    //   if (!msg.includes(txt)) msg.push(txt);
+    // } else if (firstThings.length === 0) {
 
-    if (secondThings.length > 1) {
-      txt = `There are ${secondThings.length} things called "${nouns[1]}".`;
-      if (!msg.includes(txt)) msg.push(txt);
-    }
+    // }
 
-    if (
-      firstThings.length === 1 &&
-      secondThings.length === 0 &&
-      verbs.length > 0
-    ) {
-      // simple
-      response = firstThings[0].callAction(verbs[0]);
-      if (!response) {
-        const actions = firstThings[0].getActionKeys();
-        response = `Unable to "${command}", valid actions are; ${actions.join(
-          ", "
-        )}.`;
-      }
-    }
+    // if (verbs.length === 0) {
+    //   txt = `There should be at least one verb.`;
+    //   if (!msg.includes(txt)) msg.push(txt);
+    // }
 
-    if (firstThings.length === 1 && secondThings.length === 1) {
-      // complex
-    }
+    // if (firstThings.length > 1) {
+    //   txt = `There are ${firstThings.length} things called "${nouns[0]}".`;
+    //   if (!msg.includes(txt)) msg.push(txt);
+    // }
 
-    // find actions
-    // perform call
+    // if (secondThings.length > 1) {
+    //   txt = `There are ${secondThings.length} things called "${nouns[1]}".`;
+    //   if (!msg.includes(txt)) msg.push(txt);
+    // }
 
-    // pubsub.publish(Game.getPubs.commandPostCall, {
-    //   msg,
-    //   parserResult,
-    //   firstThings,
-    //   secondThings
-    // });
+    // if (
+    //   firstThings.length === 1 &&
+    //   secondThings.length === 0 &&
+    //   verbs.length > 0
+    // ) {
+    //   // simple
+    //   response = firstThings[0].callAction(verbs[0]);
+    //   if (!response) {
+    //     const actions = firstThings[0].getActionKeys();
+    //     response = `Unable to "${command}", valid actions are; ${actions.join(
+    //       ", "
+    //     )}.`;
+    //   }
+    // }
+
+    // if (firstThings.length === 1 && secondThings.length === 1) {
+    //   // complex
+    // }
+
+    // // find actions
+    // // perform call
+
+    // // pubsub.publish(Game.getPubs.commandPostCall, {
+    // //   msg,
+    // //   parserResult,
+    // //   firstThings,
+    // //   secondThings
+    // // });
 
     pubsub.publish(Game.getPubs.command, {
       msg,
