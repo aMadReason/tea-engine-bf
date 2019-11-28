@@ -6,12 +6,12 @@ class Thing implements iThing {
   pubsub: iPubsub;
   noun: String;
   game: iGame;
-  locationKey: String;
+  locationKey: String; // if null = in inventory
   describedNoun: String;
   methods: Map<String, Function> = new Map();
   properties: Map<
     String,
-    String | Number | String[] | Number[] | iProperties<String>
+    Number | String[] | Number[] | iProperties<String> | iProperties<Boolean>
   > = new Map();
   actions: Map<String, String> = new Map(); // maps verbs to method key
 
@@ -41,7 +41,14 @@ class Thing implements iThing {
 
   setProperty(
     key: String,
-    value: String | Number | String[] | Number[] | iProperties<String>
+    value:
+      | String
+      | Boolean
+      | Number
+      | String[]
+      | Number[]
+      | iProperties<String>
+      | iProperties<Boolean>
   ) {
     this.properties.set(key, value);
     return this;
@@ -49,6 +56,10 @@ class Thing implements iThing {
 
   getProperty(key: String) {
     return this.properties.get(key);
+  }
+
+  setLocationKey(key: String) {
+    this.locationKey = key;
   }
 
   setMethod(key: String, value: Function) {

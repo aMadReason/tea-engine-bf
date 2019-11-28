@@ -23,11 +23,17 @@ export interface iThing {
   methods: Map<String, Function>;
   properties: Map<
     String,
-    String | Number | String[] | Number[] | iProperties<String>
+    | Boolean
+    | Number
+    | String[]
+    | Number[]
+    | iProperties<String>
+    | iProperties<Boolean>
   >;
   actions: Map<String, String>; // maps verbs to method key
   callAction: Function;
   getActionKeys: Function;
+  setLocationKey: Function;
 }
 
 // matches json
@@ -38,15 +44,21 @@ export interface iThingData {
   describedNoun?: String;
   behaviours?: Array<String>;
   methods?: iProperties<Function>;
-  properties?: iProperties<String | Number | String[] | Number[]>;
+  properties?: iProperties<String> | iProperties<Boolean> | iProperties<Number>;
   actions?: iProperties<String>; // maps verbs to method key
 }
 
 export interface iBehaviour {
   name?: String;
   methods: iProperties<Function>;
-  properties: iProperties<
-    String | Number | Array<String> | iProperties<String>
+  properties: Map<
+    String,
+    | Boolean
+    | Number
+    | String[]
+    | Number[]
+    | iProperties<String>
+    | iProperties<Boolean>
   >;
   actions: iProperties<String>; // maps verbs to method key
   //fn(instance: iThing): iThing;
@@ -58,6 +70,7 @@ export interface iGame {
   things: Array<iThing>;
   behaviourRegister?: Map<String, iBehaviour>;
   setLocationByKey: Function;
+  getActiveLocation: Function;
 }
 
 export interface iGameData {

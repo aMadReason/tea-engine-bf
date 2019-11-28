@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    Current location: {{location.noun}}.
     <ul v-if="locations && locations.length > 0">
       <li v-for="(i, idx) in locations" v-bind:key="idx+'-'+i.key">
         <button v-on:click="changeLocation(i.key)">{{i.key}}</button>
@@ -28,12 +29,18 @@
     </ul>
 
     <div>{{response}}</div>
+
+    <hr>Inventory:
+    <ul v-if="things && inventoryThings.length > 0">
+      <li
+        v-for="(i, idx) in inventoryThings"
+        v-bind:key="idx+'-'+i.noun"
+      >{{i.callAction('describe')}}</li>
+    </ul>
   </div>
 </template>
 
 <script>
-//import HelloWorld from "./components/HelloWorld";
-
 export default {
   name: "App",
   components: {},
@@ -54,6 +61,9 @@ export default {
     },
     things: function() {
       return this.$root.game.getActiveThings();
+    },
+    inventoryThings: function() {
+      return this.$root.game.getThingsByLocationKey(null);
     }
   },
   methods: {
@@ -66,6 +76,7 @@ export default {
     submitCommand(event) {
       event.preventDefault();
       this.game.command(this.inputCommand);
+      this.inputCommand = "";
     },
     handleCommand(data) {
       this.msg = data.msg;

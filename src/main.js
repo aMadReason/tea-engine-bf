@@ -1,6 +1,6 @@
 import Vue from "vue";
 import App from "./App.vue";
-import travel from "./tea/behaviours/travel";
+import { travel, take } from "./tea/behaviours";
 import { Game } from "./tea/index";
 //import { describe } from "./tea-engine/behaviours/describe";
 Vue.config.productionTip = false;
@@ -11,7 +11,7 @@ const gamedata = {
       noun: "cup",
       locationKey: "cabin",
       describedNoun: "golden cup",
-      behaviours: ["describe"],
+      behaviours: ["describe", "take"],
       properties: {
         descriptions: {
           default: "A small golden cup rests on it's side on the floor."
@@ -81,7 +81,7 @@ const gamedata = {
 };
 
 const g = new Game();
-g.registerBehaviour(travel);
+g.registerBehaviours([travel, take]);
 g.resolveGameData(gamedata);
 
 new Vue({

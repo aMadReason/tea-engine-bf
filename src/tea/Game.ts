@@ -127,6 +127,13 @@ class Game implements iGame {
     this.behaviourRegister.set(behaviour.name, behaviour);
   }
 
+  registerBehaviours(behaviours: iBehaviour[]) {
+    console.log(behaviours);
+    behaviours.map(behaviour => {
+      return this.registerBehaviour(behaviour);
+    });
+  }
+
   resolveData(data: iThingData) {
     return ThingComposer.resolveThingData(
       data,
@@ -170,111 +177,50 @@ class Game implements iGame {
     this.setLocationByKey(location);
   }
 
-  handleCommand(
-    type,
-    data: {
-      verb: String;
-      locations: iThing[];
-      firstThings: iThing[];
-      secondThings: iThing[];
-    }
-  ) {
-    const { verb, locations, firstThings, secondThings } = data;
-    let response = "";
-
-    if (type === "nav") locations[0].callAction(verb);
-    if (type === "simple") firstThings[0].callAction(verb);
-  }
-
-  command(cmd: String, priorCall: Function = data => true) {
+  parseCommand(cmd: String) {
     const parserResult = commandParser(cmd);
     const { nouns, verbs, described } = parserResult;
-    const msg = [];
-    let response = "";
     const verb = verbs[0];
     const locations = this.getLocationsByNoun(nouns[0], described[0]);
     const firstThings = this.getThingsByNoun(nouns[0], described[0]);
     const secondThings = this.getThingsByNoun(nouns[1], described[1]);
+    const inventoryThings = this.getThingsByLocationKey(null);
+    return {
+      parserResult,
+      verb,
+      locations,
+      firstThings,
+      secondThings,
+      inventoryThings
+    };
+  }
+
+  command(cmd: String) {
+    const {
+      parserResult,
+      verb,
+      locations,
+      firstThings,
+      secondThings,
+      inventoryThings
+    } = this.parseCommand(cmd);
+    const msg = [];
+    let response = "";
 
     const cmdTypes = {
       nav: locations.length > 0,
       simple: verb && firstThings.length > 0 && secondThings.length === 0,
-      complex: verb && firstThings.length > 0 && secondThings.length > 0
+      complex: verb && firstThings.length > 0 && secondThings.length > 0,
+      inventory: verb && inventoryThings.length > 0
     };
 
-    const cmdType = Object.keys(cmdTypes).find(k => cmdTypes[k] && k) || false;
+    const type = Object.keys(cmdTypes).find(k => cmdTypes[k] && k) || false;
 
-    const resume = priorCall({
-      msg,
-      verb,
-      firstThings,
-      secondThings,
-      locations
-    });
-
-    if (!resume) return; // if check intercepted exit
-
-    if (cmdType) {
-      this.handleCommand(cmdType, {
-        verb,
-        locations,
-        firstThings,
-        secondThings
-      });
+    if (type) {
+      if (type === "nav") response = locations[0].callAction(verb);
+      if (type === "simple") response = firstThings[0].callAction(verb);
+      if (type === "inventory") response = inventoryThings[0].callAction(verb);
     }
-
-    // if(cmdType)
-
-    // if (firstThings.length === 0 && locations.length === 0) {
-    //   txt = `There should be at least one noun.`;
-    //   if (!msg.includes(txt)) msg.push(txt);
-    // } else if (firstThings.length === 0) {
-
-    // }
-
-    // if (verbs.length === 0) {
-    //   txt = `There should be at least one verb.`;
-    //   if (!msg.includes(txt)) msg.push(txt);
-    // }
-
-    // if (firstThings.length > 1) {
-    //   txt = `There are ${firstThings.length} things called "${nouns[0]}".`;
-    //   if (!msg.includes(txt)) msg.push(txt);
-    // }
-
-    // if (secondThings.length > 1) {
-    //   txt = `There are ${secondThings.length} things called "${nouns[1]}".`;
-    //   if (!msg.includes(txt)) msg.push(txt);
-    // }
-
-    // if (
-    //   firstThings.length === 1 &&
-    //   secondThings.length === 0 &&
-    //   verbs.length > 0
-    // ) {
-    //   // simple
-    //   response = firstThings[0].callAction(verbs[0]);
-    //   if (!response) {
-    //     const actions = firstThings[0].getActionKeys();
-    //     response = `Unable to "${command}", valid actions are; ${actions.join(
-    //       ", "
-    //     )}.`;
-    //   }
-    // }
-
-    // if (firstThings.length === 1 && secondThings.length === 1) {
-    //   // complex
-    // }
-
-    // // find actions
-    // // perform call
-
-    // // pubsub.publish(Game.getPubs.commandPostCall, {
-    // //   msg,
-    // //   parserResult,
-    // //   firstThings,
-    // //   secondThings
-    // // });
 
     pubsub.publish(Game.getPubs.command, {
       msg,
@@ -283,6 +229,8 @@ class Game implements iGame {
       firstThings,
       secondThings
     });
+
+    return response;
   }
 }
 export default Game;
