@@ -11,7 +11,7 @@ const gamedata = {
       noun: "cup",
       locationKey: "cabin",
       describedNoun: "golden cup",
-      behaviours: ["describe", "take"],
+      behaviours: ["take"],
       properties: {
         descriptions: {
           default: "A small golden cup rests on it's side on the floor."
@@ -22,22 +22,18 @@ const gamedata = {
       noun: "book",
       locationKey: "cabin",
       describedNoun: "red book",
+      behaviours: ["take"],
       properties: {
         descriptions: {
           default: "A shabby red book rests haphazardly on the ground."
         }
-      },
-      actions: {
-        read: "describe",
-        use: "describe",
-        look: "describe",
-        examine: "describe"
       }
     },
     {
       noun: "book",
       locationKey: "cabin",
       describedNoun: "green book",
+      behaviours: ["take"],
       properties: {
         descriptions: {
           default: "A shabby green book rests haphazardly on the ground."
@@ -47,9 +43,12 @@ const gamedata = {
     {
       noun: "rope",
       locationKey: "deck",
+      behaviours: ["take"],
       properties: {
+        stateKey: "wall",
         descriptions: {
-          default: "A large coil of rope is hung on the wall.",
+          wall: "A large coil of rope is hung on the wall.",
+          default: "A large coil of rope.",
           dropped: "A large coil of rope sits on the floor."
         }
       }
