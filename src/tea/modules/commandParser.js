@@ -16,7 +16,7 @@ const plugin = {
   patterns: {
     "(it)": "#Ignore",
     "(light|mix)$": "#Noun",
-    "^(light|mix|move|shift)": "#Verb",
+    "^(light|mix|move|shift|pick)": "#Verb",
     "(#Conjunction|above|adjacent|beside|under|over|above|on|over|in|inside)":
       "#Join",
     "(north|east|south|west|left|right|up|down)": "#Direction",
@@ -55,12 +55,14 @@ export default function commandParser(input) {
   const joins = doc.match("#Join").out("array");
 
   // additionals
-  const infinitives = verbs.map(
-    v =>
-      nlp(v)
-        .verbs()
-        .conjugate()[0].Infinitive
-  );
+  const infinitives = verbs.map(v => {
+    const conjugated = nlp(v)
+      .verbs()
+      .conjugate();
+
+    if (conjugated && conjugated.length > 0) return conjugated[0].Infinitive;
+    return null;
+  });
   const singulars = doc
     .nouns()
     .toSingular()
