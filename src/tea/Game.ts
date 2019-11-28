@@ -26,8 +26,7 @@ class Game implements iGame {
   }
 
   static get defaultBehaviours() {
-    // behaviours here are set by default
-    return [describe];
+    return [describe]; // behaviours here are set by default
   }
 
   subscribe(eventName: string, callback: Function) {
@@ -65,27 +64,14 @@ class Game implements iGame {
     }
   }
 
-  /**
-   * Returns all Things in an location via a key
-   * @param key
-   */
   getThingsByLocationKey(key: String): iThing[] {
     return this.things.filter(i => i.locationKey === key);
   }
 
-  /**
-   * by default returns all things in the active location
-   * if a location key is passed it will return all things in there
-   * @param locationKey
-   */
   getActiveThings(locationKey: String = this.location): iThing[] {
     return this.getThingsByLocationKey(locationKey);
   }
 
-  /**
-   * searches all things for one with a matching key
-   * @param key
-   */
   getThingByKey(key: String): iThing {
     return this.things.find(i => i.key === key);
   }
@@ -112,9 +98,6 @@ class Game implements iGame {
     });
   }
 
-  /**
-   * returns all things
-   */
   getThings(): iThing[] {
     return this.things;
   }
@@ -185,9 +168,20 @@ class Game implements iGame {
     const firstThings = this.getThingsByNoun(nouns[0], described[0]);
     const secondThings = this.getThingsByNoun(nouns[1], described[1]);
     const inventoryThings = this.getThingsByLocationKey(null);
+
+    const cmdTypes = {
+      nav: locations.length > 0,
+      simple: verb && firstThings.length > 0 && secondThings.length === 0,
+      complex: verb && firstThings.length > 0 && secondThings.length > 0,
+      inventory: verb && inventoryThings.length > 0
+    };
+
+    const type = Object.keys(cmdTypes).find(k => cmdTypes[k] && k) || false;
+
     return {
       parserResult,
       verb,
+      type,
       locations,
       firstThings,
       secondThings,
@@ -199,6 +193,7 @@ class Game implements iGame {
     const {
       parserResult,
       verb,
+      type,
       locations,
       firstThings,
       secondThings,
@@ -206,15 +201,6 @@ class Game implements iGame {
     } = this.parseCommand(cmd);
     const msg = [];
     let response = "";
-
-    const cmdTypes = {
-      nav: locations.length > 0,
-      simple: verb && firstThings.length > 0 && secondThings.length === 0,
-      complex: verb && firstThings.length > 0 && secondThings.length > 0,
-      inventory: verb && inventoryThings.length > 0
-    };
-
-    const type = Object.keys(cmdTypes).find(k => cmdTypes[k] && k) || false;
 
     if (type) {
       if (type === "nav") response = locations[0].callAction(verb);

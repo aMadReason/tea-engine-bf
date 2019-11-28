@@ -35,7 +35,7 @@
       <li
         v-for="(i, idx) in inventoryThings"
         v-bind:key="idx+'-'+i.noun"
-      >{{i.callAction('describe')}}</li>
+      >{{i.describedNoun || i.noun}}</li>
     </ul>
   </div>
 </template>
