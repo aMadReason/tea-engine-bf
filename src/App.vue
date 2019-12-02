@@ -41,6 +41,33 @@
 </template>
 
 <script>
+import HowlerChannel from "./tea/modules/HowlerChannel";
+
+const tracks = new HowlerChannel({ fade: true }).addSounds([
+  {
+    key: "low",
+    label: "Very Low Note",
+    src:
+      "https://uploads.codesandbox.io/uploads/user/2df242b1-1372-45c6-aca0-691e384c2be9/iiRx-very-low-note-by-kevin-macleod.mp3",
+    loop: true,
+    volume: 0.5,
+    autoplay: false
+  }
+]);
+
+tracks.play("low");
+const effects = new HowlerChannel().addSounds([
+  {
+    key: "doorClose_3",
+    src: "/assets/aud/kenney_rpgaudio/Audio/doorClose_3.ogg"
+  },
+  {
+    key: "handleSmallLeather",
+    src:
+      "https://uploads.codesandbox.io/uploads/user/2df242b1-1372-45c6-aca0-691e384c2be9/rjy_-handleSmallLeather.ogg"
+  }
+]);
+
 export default {
   name: "App",
   components: {},
@@ -79,15 +106,23 @@ export default {
       this.inputCommand = "";
     },
     handleCommand(data) {
+      const { verb, type, valid } = data;
       this.msg = data.msg;
       this.response = data.response;
-      console.log(data);
+
+      const takeActs = "take|pick|drop|leave";
+
+      if (valid) {
+        if (takeActs.includes(verb)) effects.play("handleSmallLeather");
+      }
     }
   },
   mounted() {
     //console.log(this.$root.game);
 
-    this.$root.game.subscribe("tea-command", data => this.handleCommand(data));
+    this.$root.game.subscribe("tea-command-post", data =>
+      this.handleCommand(data)
+    );
   }
 };
 </script>

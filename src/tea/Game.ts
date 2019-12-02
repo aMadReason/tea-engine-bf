@@ -10,9 +10,10 @@ class Game implements iGame {
   things: Array<iThing> = [];
   behaviourRegister: Map<String, iBehaviour> = new Map();
 
-  constructor(things = [], locations = []) {
+  constructor(things = [], locations = [], patterns = {}) {
     this.locations = locations;
     this.things = things;
+    this.parserPatterns = patterns;
     //add default behaviours
     Game.defaultBehaviours.map(b => this.registerBehaviour(b));
   }
@@ -20,8 +21,9 @@ class Game implements iGame {
   static get getPubs() {
     return {
       locationChange: "tea-location-change",
+      commandParseCall: "tea-command-parse",
       commandPriorCall: "tea-command-prior",
-      command: "tea-command"
+      commandPostCall: "tea-command-post"
     };
   }
 
@@ -76,8 +78,11 @@ class Game implements iGame {
     return this.things.find(i => i.key === key);
   }
 
-  getThingsByNoun(noun: String, describedNoun: String = undefined) {
-    const things = this.getActiveThings();
+  getThingsByNoun(
+    noun: String,
+    describedNoun: String = undefined,
+    things: iThing[] = this.getActiveThings()
+  ) {
     return things.filter(t => {
       const isDescribed = t.describedNoun === describedNoun;
       const isNoun = noun && t.noun === noun;
@@ -111,7 +116,6 @@ class Game implements iGame {
   }
 
   registerBehaviours(behaviours: iBehaviour[]) {
-    console.log(behaviours);
     behaviours.map(behaviour => {
       return this.registerBehaviour(behaviour);
     });
@@ -160,60 +164,101 @@ class Game implements iGame {
     this.setLocationByKey(location);
   }
 
-  parseCommand(cmd: String) {
-    const parserResult = commandParser(cmd);
+  parseCommand(cmd: String, patterns = this.parserPatterns) {
+    const msg = [];
+    const parserResult = commandParser(cmd, patterns);
     const { nouns, verbs, described } = parserResult;
     const verb = verbs[0];
     const locations = this.getLocationsByNoun(nouns[0], described[0]);
     const firstThings = this.getThingsByNoun(nouns[0], described[0]);
     const secondThings = this.getThingsByNoun(nouns[1], described[1]);
-    const inventoryThings = this.getThingsByLocationKey(null);
+    const iThings = this.getThingsByLocationKey(null);
+    const inventoryThings = this.getThingsByNoun(
+      nouns[0],
+      described[0],
+      iThings
+    );
+
+    const lLength = locations.length;
+    const fLength = firstThings.length;
+    const sLength = secondThings.length;
+    const iLength = inventoryThings.length;
 
     const cmdTypes = {
-      nav: locations.length > 0,
-      simple: verb && firstThings.length > 0 && secondThings.length === 0,
-      complex: verb && firstThings.length > 0 && secondThings.length > 0,
-      inventory: verb && inventoryThings.length > 0
+      // order is important
+      nav: lLength > 0,
+      inventory: verb && iLength > 0 && fLength === 0,
+      simple: verb && fLength > 0 && sLength === 0,
+      complex: verb && fLength > 0 && sLength > 0
     };
 
-    const type = Object.keys(cmdTypes).find(k => cmdTypes[k] && k) || false;
+    let type = Object.keys(cmdTypes).find(k => cmdTypes[k] && k) || false;
 
-    return {
-      parserResult,
-      verb,
-      type,
-      locations,
-      firstThings,
-      secondThings,
-      inventoryThings
-    };
-  }
+    // secondary checks
+    const simpleDuplicate =
+      type === "simple" &&
+      fLength >= 2 &&
+      firstThings[0].noun === firstThings[1].noun;
 
-  command(cmd: String) {
-    const {
-      parserResult,
-      verb,
-      type,
-      locations,
-      firstThings,
-      secondThings,
-      inventoryThings
-    } = this.parseCommand(cmd);
-    const msg = [];
-    let response = "";
-
-    if (type) {
-      if (type === "nav") response = locations[0].callAction(verb);
-      if (type === "simple") response = firstThings[0].callAction(verb);
-      if (type === "inventory") response = inventoryThings[0].callAction(verb);
+    if (simpleDuplicate) {
+      type = "simpleDuplicate";
+      msg.push(
+        `Please be more descriptive and reference ${firstThings
+          .map(i => `"${i.describedNoun}"`)
+          .join(" or ")}.`
+      );
     }
 
-    pubsub.publish(Game.getPubs.command, {
+    if (inventoryThings.length >= 2) {
+      type = "inventoryDuplicate";
+      msg.push(
+        `Please be more descriptive and reference ${inventoryThings
+          .map(i => `"${i.describedNoun}"`)
+          .join(" or ")}.`
+      );
+    }
+
+    const result = {
       msg,
-      response,
-      parserResult,
+      ...parserResult,
+      verb,
+      type,
+      locations,
       firstThings,
-      secondThings
+      secondThings,
+      inventoryThings
+    };
+    pubsub.publish(Game.getPubs.commandParseCall, result);
+    return result;
+  }
+
+  command(cmd: String, patterns = this.parserPatterns) {
+    const result = this.parseCommand(cmd, patterns);
+    const { verb, type, locations, firstThings, inventoryThings } = result;
+    let valid = false;
+    let response = "";
+
+    pubsub.publish(Game.getPubs.commandPriorCall, { ...result });
+
+    if (type === "nav" && locations.length > 0) {
+      valid = true;
+      response = locations[0].callAction(verb);
+    }
+
+    if (type === "simple" && firstThings.length > 0) {
+      valid = true;
+      response = firstThings[0].callAction(verb);
+    }
+
+    if (type === "inventory") {
+      valid = true;
+      inventoryThings[0].callAction(verb);
+    }
+
+    pubsub.publish(Game.getPubs.commandPostCall, {
+      ...result,
+      valid,
+      response
     });
 
     return response;

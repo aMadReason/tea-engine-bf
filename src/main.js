@@ -2,7 +2,6 @@ import Vue from "vue";
 import App from "./App.vue";
 import { travel, take } from "./tea/behaviours";
 import { Game } from "./tea/index";
-//import { describe } from "./tea-engine/behaviours/describe";
 Vue.config.productionTip = false;
 
 const gamedata = {

@@ -7,62 +7,59 @@ const types = [
   "#ParserSimple" // mix paint 'basic'
 ];
 
-const plugin = {
-  words: {
-    open: "Verb",
-    cup: "Noun",
-    golden: "Adjective"
-  },
-  patterns: {
-    "(it)": "#Ignore",
-    "(light|mix)$": "#Noun",
-    "^(light|mix|move|shift|pick)": "#Verb",
-    "(#Conjunction|above|adjacent|beside|under|over|above|on|over|in|inside)":
-      "#Join",
-    "(north|east|south|west|left|right|up|down)": "#Direction",
-    "#Verb (#Determiner|#Preposition)? #Adjective+ (with|using|on|using|and) (#Determiner|#Preposition)? #Adjective #Noun$":
-      "#ParserComplexImplicit",
-    "#Verb (#Determiner|#Preposition)? #Adjective+? #Noun #Join? (#Determiner|#Preposition)? #Adjective+? #Noun":
-      "#ParserComplex",
-    "#Verb (#Determiner|#Preposition)? #Adjective+? #Noun": "#ParserSimple"
-  }
+const defaultPatterns = {
+  open: "Verb",
+  cup: "Noun",
+  golden: "Adjective",
+  "(it)": "Ignore",
+  "(light|mix)$": "Noun",
+  "^(light|mix|move|shift|pick)": "Verb",
+  "(#Conjunction|above|adjacent|beside|under|over|above|on|over|in|inside)":
+    "Join",
+  "(north|east|south|west|left|right|up|down)": "Direction",
+  "#Verb (#Determiner|#Preposition)? #Adjective+ (with|using|on|using|and) (#Determiner|#Preposition)? #Adjective #Noun$":
+    "ParserComplexImplicit",
+  "#Verb (#Determiner|#Preposition)? #Adjective+? #Noun #Join? (#Determiner|#Preposition)? #Adjective+? #Noun":
+    "ParserComplex",
+  "#Verb (#Determiner|#Preposition)? #Adjective+? #Noun": "ParserSimple"
 };
 
-nlp.plugin(plugin);
-
-export default function commandParser(input) {
-  const doc = nlp(input)
+export default function commandParser(input, patterns = {}) {
+  const words = { ...defaultPatterns, ...patterns };
+  const doc = nlp(input, words)
     .clone()
     .normalize();
 
+  Object.keys(words).map(p => doc.match(p).tag(words[p]));
   const type = types.find(i => doc.has(i) && i);
 
   // Get output
   const tags = doc.out("tags");
   const verbs = doc
-    .match("#Verb")
-    .not("(#Join")
+    .verbs()
+    .toInfinitive()
     .out("array");
+  // const verbs = doc
+  //   .match("#Verb")
+  //   .not("(#Join")
+  //   .out("array");
   const nouns = doc
     .not("#Ignore")
     .match("#Noun")
     .out("array");
   let described = doc
-    .not("#Direction")
-    .not("#Join")
+    .not("#Direction|#Join")
+    //.not("#Join")
     .match("#Adjective+ #Noun")
     .out("array"); // unable to filter valid
   const joins = doc.match("#Join").out("array");
 
   // additionals
-  const infinitives = verbs.map(v => {
-    const conjugated = nlp(v)
-      .verbs()
-      .conjugate();
-
-    if (conjugated && conjugated.length > 0) return conjugated[0].Infinitive;
-    return null;
-  });
+  // const infinitives = doc
+  //   .verbs()
+  //   .toInfinitive()
+  //   .conjugate()
+  //   .map(i => i.Infinitive);
   const singulars = doc
     .nouns()
     .toSingular()
@@ -92,7 +89,7 @@ export default function commandParser(input) {
     .join(" ");
 
   const strictCommand = [
-    infinitives[0],
+    verbs[0],
     described[0] || singulars[0],
     joins[0] || null,
     described[1] || singulars[1] || ""
@@ -102,7 +99,7 @@ export default function commandParser(input) {
 
   return {
     tags,
-    infinitives,
+    //infinitives,
     singulars,
     strictCommand,
     adjectives,

@@ -71,6 +71,7 @@ export interface iGame {
   behaviourRegister?: Map<String, iBehaviour>;
   setLocationByKey: Function;
   getActiveLocation: Function;
+  getThingsByLocationKey: Function;
 }
 
 export interface iGameData {
