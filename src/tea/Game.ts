@@ -9,6 +9,7 @@ class Game implements iGame {
   locations: Array<iThing> = [];
   things: Array<iThing> = [];
   behaviourRegister: Map<String, iBehaviour> = new Map();
+  parserPatterns: Object;
 
   constructor(things = [], locations = [], patterns = {}) {
     this.locations = locations;

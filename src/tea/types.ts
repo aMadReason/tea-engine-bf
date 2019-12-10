@@ -69,6 +69,7 @@ export interface iGame {
   locations: Array<iThing>;
   things: Array<iThing>;
   behaviourRegister?: Map<String, iBehaviour>;
+  parserPatterns?: Object;
   setLocationByKey: Function;
   getActiveLocation: Function;
   getThingsByLocationKey: Function;

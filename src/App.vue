@@ -1,5 +1,7 @@
 <template>
-  <div id="app">
+  <app-layout/>
+  <!-- <div id="app">
+    
     Current location: {{location.noun}}.
     <ul v-if="locations && locations.length > 0">
       <li v-for="(i, idx) in locations" v-bind:key="idx+'-'+i.key">
@@ -37,10 +39,11 @@
         v-bind:key="idx+'-'+i.noun"
       >{{i.describedNoun || i.noun}}</li>
     </ul>
-  </div>
+  </div>-->
 </template>
 
 <script>
+import Layout from "./components/Layout";
 import HowlerChannel from "./tea/modules/HowlerChannel";
 
 const tracks = new HowlerChannel({ fade: true }).addSounds([
@@ -69,12 +72,18 @@ const effects = new HowlerChannel().addSounds([
 ]);
 
 export default {
-  name: "App",
-  components: {},
+  name: "app-main",
+  components: {
+    "app-layout": Layout
+  },
+  props: {
+    source: String
+  },
   data: () => ({
     inputCommand: "",
     msg: [],
-    response: null
+    response: null,
+    drawer: null
   }),
   computed: {
     game: function() {
@@ -106,7 +115,7 @@ export default {
       this.inputCommand = "";
     },
     handleCommand(data) {
-      const { verb, type, valid } = data;
+      const { verb, valid } = data;
       this.msg = data.msg;
       this.response = data.response;
 
@@ -120,9 +129,7 @@ export default {
   mounted() {
     //console.log(this.$root.game);
 
-    this.$root.game.subscribe("tea-command-post", data =>
-      this.handleCommand(data)
-    );
+    this.$root.game.subscribe("tea-command-post", data => this.handleCommand(data));
   }
 };
 </script>

@@ -22,7 +22,8 @@ const take = {
     take: "take",
     pick: "take",
     drop: "drop",
-    leave: "drop"
+    leave: "drop",
+    put: "drop"
   }
 };
 
