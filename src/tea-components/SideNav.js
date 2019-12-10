@@ -55,13 +55,15 @@ class MyElement extends LitElement {
 
   static get properties() {
     return {
-      isOpen: { type: String, attribute: "data-open", reflect: true }
+      isOpen: { type: String, attribute: "data-open", reflect: true },
+      ariaLabel: { type: String, attribute: "data-label" }
     };
   }
 
   constructor() {
     super();
     this.isOpen = "false";
+    this.ariaLabel = "General";
   }
 
   dispatch() {
@@ -106,10 +108,21 @@ class MyElement extends LitElement {
   render() {
     return html`
       <!-- template content -->
-      <div class="sidebar" tabindex="0" data-open="${this.isOpen}" @focus=${() => this.open()}>
+      <div
+        role="navigation"
+        aria-label="${this.ariaLabel}"
+        class="sidebar"
+        tabindex="0"
+        data-open="${this.isOpen}"
+        @focus=${() => this.open()}
+      >
         <slot></slot>
       </div>
-      <div @click=${this.handleOverlayClick} data-sidenav-overlay="${this.isOpen}"></div>
+      <div
+        aria-hidden="true"
+        @click=${this.handleOverlayClick}
+        data-sidenav-overlay="${this.isOpen}"
+      ></div>
     `;
   }
 }

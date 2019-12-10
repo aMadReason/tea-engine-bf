@@ -1,10 +1,20 @@
 <template>
   <div>
     <nav>
-      <div class="bar"></div>
+      <div class="bar">
+        <ul class="inline float right">
+          <li>item 1</li>
+          <li>
+            <button v-on:click="handleOpen">test</button>
+          </li>
+        </ul>
+      </div>
     </nav>
 
-    <tea-sidenav ref="sidenav" :data-open="open">hi</tea-sidenav>
+    <tea-sidenav ref="sidenav" :data-open="open">
+      hi
+      <a href="#">test</a>
+    </tea-sidenav>
 
     <section>Hi</section>
   </div>
