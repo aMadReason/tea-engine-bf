@@ -3,6 +3,7 @@ import { ThingComposer } from "./index";
 import pubsub from "./modules/pubsub";
 import commandParser from "./modules/commandParser";
 import describe from "./behaviours/describe";
+import help from "./behaviours/help";
 
 class Game implements iGame {
   location: String = null;
@@ -29,7 +30,7 @@ class Game implements iGame {
   }
 
   static get defaultBehaviours() {
-    return [describe]; // behaviours here are set by default
+    return [describe, help]; // behaviours here are set by default
   }
 
   subscribe(eventName: string, callback: Function) {
@@ -67,7 +68,7 @@ class Game implements iGame {
     }
   }
 
-  getThingsByLocationKey(key: String): iThing[] {
+  getThingsByLocationKey(key: String = null): iThing[] {
     return this.things.filter(i => i.locationKey === key);
   }
 
@@ -123,12 +124,7 @@ class Game implements iGame {
   }
 
   resolveData(data: iThingData) {
-    return ThingComposer.resolveThingData(
-      data,
-      this.behaviourRegister,
-      pubsub,
-      this
-    );
+    return ThingComposer.resolveThingData(data, this.behaviourRegister, pubsub, this);
   }
 
   // does some pre-processing on iThingData for things like default behaviours
@@ -174,11 +170,7 @@ class Game implements iGame {
     const firstThings = this.getThingsByNoun(nouns[0], described[0]);
     const secondThings = this.getThingsByNoun(nouns[1], described[1]);
     const iThings = this.getThingsByLocationKey(null);
-    const inventoryThings = this.getThingsByNoun(
-      nouns[0],
-      described[0],
-      iThings
-    );
+    const inventoryThings = this.getThingsByNoun(nouns[0], described[0], iThings);
 
     const lLength = locations.length;
     const fLength = firstThings.length;
@@ -197,9 +189,7 @@ class Game implements iGame {
 
     // secondary checks
     const simpleDuplicate =
-      type === "simple" &&
-      fLength >= 2 &&
-      firstThings[0].noun === firstThings[1].noun;
+      type === "simple" && fLength >= 2 && firstThings[0].noun === firstThings[1].noun;
 
     if (simpleDuplicate) {
       type = "simpleDuplicate";
@@ -253,7 +243,7 @@ class Game implements iGame {
 
     if (type === "inventory") {
       valid = true;
-      inventoryThings[0].callAction(verb);
+      response = inventoryThings[0].callAction(verb);
     }
 
     pubsub.publish(Game.getPubs.commandPostCall, {

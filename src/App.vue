@@ -44,32 +44,6 @@
 
 <script>
 import Layout from "./components/Layout";
-import HowlerChannel from "./tea/modules/HowlerChannel";
-
-const tracks = new HowlerChannel({ fade: true }).addSounds([
-  {
-    key: "low",
-    label: "Very Low Note",
-    src:
-      "https://uploads.codesandbox.io/uploads/user/2df242b1-1372-45c6-aca0-691e384c2be9/iiRx-very-low-note-by-kevin-macleod.mp3",
-    loop: true,
-    volume: 0.5,
-    autoplay: false
-  }
-]);
-
-tracks.play("low");
-const effects = new HowlerChannel().addSounds([
-  {
-    key: "doorClose_3",
-    src: "/assets/aud/kenney_rpgaudio/Audio/doorClose_3.ogg"
-  },
-  {
-    key: "handleSmallLeather",
-    src:
-      "https://uploads.codesandbox.io/uploads/user/2df242b1-1372-45c6-aca0-691e384c2be9/rjy_-handleSmallLeather.ogg"
-  }
-]);
 
 export default {
   name: "app-main",
@@ -86,50 +60,50 @@ export default {
     drawer: null
   }),
   computed: {
-    game: function() {
-      return this.$root.game;
-    },
-    locations: function() {
-      return this.$root.game.locations;
-    },
-    location: function() {
-      return this.$root.game.getActiveLocation();
-    },
-    things: function() {
-      return this.$root.game.getActiveThings();
-    },
-    inventoryThings: function() {
-      return this.$root.game.getThingsByLocationKey(null);
-    }
+    // game: function() {
+    //   return this.$root.game;
+    // },
+    // locations: function() {
+    //   return this.$root.game.locations;
+    // },
+    // location: function() {
+    //   return this.$root.game.getActiveLocation();
+    // },
+    // things: function() {
+    //   return this.$root.game.getActiveThings();
+    // },
+    // inventoryThings: function() {
+    //   return this.$root.game.getThingsByLocationKey(null);
+    // }
   },
   methods: {
-    changeLocation(key) {
-      this.game.setLocationByKey(key);
-    },
-    describeLocation: function() {
-      return this.location.callAction("describe");
-    },
-    submitCommand(event) {
-      event.preventDefault();
-      this.game.command(this.inputCommand);
-      this.inputCommand = "";
-    },
-    handleCommand(data) {
-      const { verb, valid } = data;
-      this.msg = data.msg;
-      this.response = data.response;
-
-      const takeActs = "take|pick|drop|leave";
-
-      if (valid) {
-        if (takeActs.includes(verb)) effects.play("handleSmallLeather");
-      }
+    setResponse(content) {
+      this.response = content;
     }
+    // changeLocation(key) {
+    //   this.game.setLocationByKey(key);
+    // },
+    // describeLocation: function() {
+    //   return this.location.callAction("describe");
+    // },
+    // submitCommand(event) {
+    //   event.preventDefault();
+    //   this.game.command(this.inputCommand);
+    //   this.inputCommand = "";
+    // },
+    // handleCommand(data) {
+    //   const { verb, valid } = data;
+    //   this.msg = data.msg;
+    //   this.response = data.response;
+    //   const takeActs = "take|pick|drop|leave";
+    //   if (valid) {
+    //     if (takeActs.includes(verb)) effects.play("handleSmallLeather");
+    //   }
+    // }
   },
   mounted() {
     //console.log(this.$root.game);
-
-    this.$root.game.subscribe("tea-command-post", data => this.handleCommand(data));
+    //this.$root.game.subscribe("tea-command-post", data => this.handleCommand(data));
   }
 };
 </script>

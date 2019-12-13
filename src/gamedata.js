@@ -38,9 +38,9 @@ const gamedata = {
       locationKey: "deck",
       behaviours: ["take"],
       properties: {
-        stateKey: "wall",
+        stateKey: "initial",
         descriptions: {
-          wall: "A large coil of rope is hung on the wall.",
+          initial: "A large coil of rope is hung on the wall.",
           default: "A large coil of rope.",
           dropped: "A large coil of rope sits on the floor."
         }

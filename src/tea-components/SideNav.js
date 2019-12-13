@@ -7,7 +7,7 @@ class MyElement extends LitElement {
   static get styles() {
     return css`
       .sidebar[data-open] {
-        background: var(--tea-sidebar-bgcolor, #eee);
+        background: var(--tea-bg-3, #eee);
         position: fixed;
         width: var(--tea-sidebar-width, 300px);
         max-width: var(--tea-sidebar-maxwidth, initial);
@@ -29,6 +29,31 @@ class MyElement extends LitElement {
 
       .sidebar[data-open="true"] {
         transform: translateX(0%);
+      }
+
+      .sidebar[data-open] button.close {
+        float: right;
+        border: 0;
+        font-size: 1rem;
+        font-weight: bold;
+        min-height: 30px;
+        min-width: 30px;
+        margin: 3px;
+        color: var(--tea-txt-2, #eee);
+        border-radius: 100%;
+        border: 2px solid transparent;
+        transition: border 0.3s ease, background 0.5s ease;
+        background: transparent;
+      }
+
+      .sidebar[data-open] button.close:hover {
+        cursor: pointer;
+        background: var(--tea-bg-2, #000);
+      }
+
+      .sidebar[data-open] button.close:focus {
+        cursor: pointer;
+        border: 2px solid var(--tea-txt-2, #000);
       }
 
       [data-sidenav-overlay] {
@@ -77,10 +102,21 @@ class MyElement extends LitElement {
 
   open() {
     this.isOpen = "true";
+    this.elements.map(i => i.setAttribute("tabindex", 0));
+    this.ref.setAttribute("tabindex", 0);
+    this.ref.focus();
     this.dispatch();
   }
 
+  openWithTrigger(triggerEl = null) {
+    this.triggerEl = triggerEl;
+    this.open();
+  }
+
   close() {
+    this.elements.map(i => i.setAttribute("tabindex", -1));
+    this.ref.setAttribute("tabindex", -1);
+    if (this.triggerEl) this.triggerEl.focus();
     this.isOpen = "false";
     this.dispatch();
   }
@@ -92,12 +128,27 @@ class MyElement extends LitElement {
 
   firstUpdated() {
     this.ref = this.shadowRoot.querySelector("[data-open]");
+    const closeRef = this.shadowRoot.querySelector(".close");
+    const focusables = this.querySelectorAll(
+      "a, input, button, textarea, [tabindex], [contenteditable='true']"
+    );
+    this.elements = [closeRef, ...[].slice.call(focusables)];
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.addEventListener("blur", () => {
-      if (document.activeElement !== this) this.close();
+    this.addEventListener("keydown", e => {
+      if (e.key === "Tab") {
+        const target = e.explicitOriginalTarget || e.target;
+        const last = this.elements[this.elements.length - 1];
+        const first = this.elements[0];
+        const isLast = target === last && !e.shiftKey;
+        const isFirst = target === first && e.shiftKey;
+
+        if (isFirst || isLast) e.preventDefault();
+        if (isLast) first.focus();
+        if (isFirst) last.focus();
+      }
     });
   }
 
@@ -109,13 +160,18 @@ class MyElement extends LitElement {
     return html`
       <!-- template content -->
       <div
-        role="navigation"
+        role="region"
         aria-label="${this.ariaLabel}"
         class="sidebar"
-        tabindex="0"
+        tabindex="-1"
         data-open="${this.isOpen}"
         @focus=${() => this.open()}
       >
+        <div>
+          <button class="close" aria-label="close" @click=${() => this.close()}>
+            ×
+          </button>
+        </div>
         <slot></slot>
       </div>
       <div

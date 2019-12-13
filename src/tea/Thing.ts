@@ -54,7 +54,9 @@ class Thing implements iThing {
     return this;
   }
 
-  getProperty(key: String) {
+  getProperty(
+    key: String
+  ): String | Boolean | Number | String[] | Number[] | iProperties<String> | iProperties<Boolean> {
     return this.properties.get(key);
   }
 

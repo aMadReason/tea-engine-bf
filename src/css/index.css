@@ -3,9 +3,10 @@
 :root {
   /* Brand */
   --tea-body-font: "Roboto", san-serif;
-  --tea-color-1: #00695c; /* base color */
-  --tea-color-2: #00796b; /* usually lligher */
+  --tea-color-1: #056f65; /* base color */
+  --tea-color-2: #2bbbad; /* usually lligher */
   --tea-color-3: #004d40; /* usually darker */
+  --tea-color-attn: white;
 
   /* Bakcground */
   --tea-bg-1: rgb(28, 32, 34);
@@ -21,23 +22,32 @@
   --tea-spacing: 1rem;
   --tea-font-size: 1rem;
   --tea-radius: 0.15rem;
+  --tea-transition: 0.5s ease;
+}
+
+html,
+body {
+  height: 100%;
 }
 
 body {
   background-color: var(--tea-bg-1, white);
   color: var(--tea-txt-1, black);
+  font-size: 16px;
 }
 
 /** Actionables **/
 /** Links **/
 a {
+  text-decoration: none;
   position: relative;
-  text-decoration: underline;
+  border-bottom: 1px solid var(--tea-color-2, #000000);
+  border: 0;
   color: var(--tea-color-2, #000000);
   font-weight: 500;
 }
 
-/* a::after {
+a::after {
   content: "";
   position: absolute;
   transition: transform 0.5s ease;
@@ -51,16 +61,12 @@ a {
 }
 
 a:hover:after {
-  transform: scaleX(0.6);
-}
-
-a:focus:after {
   transform: scaleX(1);
-} */
+}
 
 a:hover {
   text-decoration: none;
-  color: var(--tea-color-1, #000000);
+  color: var(--tea-color-3, #000000);
 }
 
 a:active {
@@ -68,65 +74,123 @@ a:active {
   color: var(--tea-color-1, #000000);
 }
 
+a:visited {
+  text-decoration: none;
+  color: var(--tea-color-3, #000000);
+}
+
 button {
   border-radius: var(--tea-radius, 0.2rem);
-  background: var(--tea-color-3, #ffffff); /** ripple color **/
-  background: var(--tea-color-1, #ffffff)
-    radial-gradient(circle, transparent 1%, var(--tea-color-1, #ffffff) 1%) center/15000%;
+  background: var(--tea-color-1, #ffffff); /** ripple color **/
   color: var(--tea-txt-1, #000000);
-  border: 1px var(--tea-color-1) solid;
+  border: 0px var(--tea-color-2) solid;
   border-radius: 2px;
   display: inline-block;
-  padding: 0rem 0.5rem;
-  background-position: center;
-  transition: background 0.8s;
+  padding: 0rem calc(var(--tea-spacing) / 2);
+  transition: background 0.5s ease, transform 0.3s;
   box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.14), 0 1px 7px 0 rgba(0, 0, 0, 0.12),
     0 3px 1px -1px rgba(0, 0, 0, 0.2);
   min-height: 30px;
-  transform: translateY(-2px);
+  transform: translateY(0);
+  will-change: transform, background;
 }
+
 button[disabled] {
-  background-color: #cccccc;
+  background: #cccccc;
   color: #666666;
   cursor: not-allowed;
   pointer-events: none;
 }
-button button:not([disabled]):hover {
-  background-color: var(--tea-color-2, #000000);
+button:not([disabled]):hover {
+  background: var(--tea-color-2, #000000);
 }
+
 button:not([disabled]):active {
-  background-color: var(--tea-color-3, #ffffff);
   background-size: 100%;
-  transition: background 0s;
-  transform: translateY(0);
+  transform: translateY(2px);
 }
 button:focus {
-  outline-width: 0;
-  border: 1px var(--tea-color-3) solid;
+  background-color: var(--tea-color-3, #ffffff);
+  outline-offset: 2px;
 }
 
 /** Native Overrides **/
 
-/** Specific bits **/
-.bar {
-  clear: both;
-  width: 100%;
-  background: var(--tea-bg-3, slategrey);
-  padding: 1rem 0;
+h1 {
+  font-size: 160%;
+}
+h2 {
+  font-size: 150%;
+}
+h3 {
+  font-size: 140%;
+}
+h4 {
+  font-size: 130%;
+}
+h5 {
+  font-size: 120%;
+}
+h6 {
+  font-size: 110%;
+}
+
+ul,
+ol {
+  padding: 0;
+}
+
+input {
+  border-radius: calc(var(--tea-radius) / 2);
+  transition: box-shadow 0.3s, border 0.3s, -webkit-box-shadow 0.3s;
+  border: none;
+  background: transparent;
+  border-bottom: 1px solid #9e9e9e;
+  color: var(--tea-txt-1);
+  caret-color: var(--tea-txt-1);
+}
+
+input:focus {
+  border-bottom: 1px solid var(--tea-color-1);
+  box-shadow: 0 1px 0 0 var(--tea-color-1);
 }
 
 /* Helpers */
 
-.clearfix {
-  clear: both;
+.full-width {
+  width: 100%;
 }
 
-.float-left {
-  float: left;
+.full-height {
+  height: 100%;
 }
 
-.float-right {
-  float: right;
+.field {
+  position: relative;
+  padding: calc(var(--tea-spacing) / 2) 0 0;
+  margin-top: 0.8rem;
+}
+
+.field label {
+  margin-right: calc(var(--tea-spacing) / 2);
+  text-align: left;
+}
+
+.field input + label {
+  width: 100%;
+  transform: scale(0.8) translateY(50%);
+  transition: opacity 0.5s, transform 0.2s ease-out;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  opacity: 1;
+}
+
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label {
+  opacity: 0.7;
+  transform: scale(0.8) translateY(-50%);
 }
 
 ul.inline {
@@ -137,6 +201,7 @@ ul.inline {
 }
 
 ul.inline li {
-  margin: 0 0.5rem;
+  margin: 0 calc(var(--tea-spacing) / 2);
   display: inline-block;
+  vertical-align: top;
 }
