@@ -9,9 +9,9 @@ const describe = {
     }
   },
   methods: {
-    describe(instance: Thing): String {
-      const stateKey = instance.getProperty("stateKey");
-      return instance.getProperty("descriptions")[stateKey];
+    describe(ins: Thing): String {
+      const stateKey = ins.getProperty("stateKey");
+      return ins.getProperty("descriptions")[stateKey];
     }
   },
   actions: {

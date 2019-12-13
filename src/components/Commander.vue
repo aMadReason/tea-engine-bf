@@ -43,26 +43,15 @@ export default {
   methods: {
     submitCommand(event) {
       event.preventDefault();
-      const parsed = this.game.parseCommand(this.inputCommand);
-
-      if (parsed.strictCommand === "inventory") {
-        const inventory = this.game.getThingsByLocationKey();
-        if (inventory.length === 0) return (this.$root.response = `You aren't carrying anything.`);
-        return (this.$root.response = `The items you are carrying are ${inventory
-          .map(i => `a ${i.describedNoun || i.noun}`)
-          .join(", ")}.`);
-      }
-
-      console.log(parsed);
 
       this.game.command(this.inputCommand);
+
       this.inputCommand = "";
     },
 
-    commandPostHook(data) {
+    commandHook(data) {
       const { verb, valid } = data;
       this.msg = data.msg;
-      this.response = data.response;
 
       const takeActs = "take|pick|drop|leave";
       const goActs = "go|move";
@@ -71,18 +60,32 @@ export default {
         if (takeActs.includes(verb)) effects.play("handleSmallLeather");
         if (goActs.includes(verb)) effects.play("doorClose_3");
       }
+
+      if (data.strictCommand === "inventory") {
+        const inventory = this.game.getThingsByLocationKey();
+        if (inventory.length === 0) return (this.response = `You aren't carrying anything.`);
+        return (this.response = `The items you are carrying are ${inventory
+          .map(i => `a ${i.describedNoun || i.noun}`)
+          .join(", ")}.`);
+      }
+
+      if (data.msg && data.msg.length > 0) {
+        this.response = data.msg.join(" ");
+      }
+
+      if (data.valid) return (this.response = data.commandAction());
     }
   },
   mounted() {
-    this.$root.game.subscribe("tea-command-post", data => this.commandPostHook(data));
-    this.$root.game.subscribe("tea-location-change", data => this.commandPostHook(data));
+    this.$root.game.subscribe("tea-command", data => this.commandHook(data));
+    this.$root.game.subscribe("tea-location-change", data => this.commandHook(data));
     tracks.play("low");
 
     this.$refs.responseEl.addEventListener("click", e => {
-      const { noun, verb, describedNoun } = e.target.dataset;
+      const { noun, verb, described } = e.target.dataset;
       //const results = this.$root.game.getThingsByNoun(noun, describedNoun, this.things);
       //if (results.length === 0) return null;
-      this.game.command(`${verb} ${describedNoun || noun}`);
+      this.game.command(`${verb} ${described || noun}`);
     });
   }
 };
@@ -110,7 +113,11 @@ export default {
   flex: 0 0 100%;
   border-radius: var(--tea-radius);
   text-align: left;
-  padding: calc(var(--tea-spacing)/2)
+  padding: calc(var(--tea-spacing)/2);
+}
+
+.response:first-letter {
+  text-transform: uppercase;
 }
 
 

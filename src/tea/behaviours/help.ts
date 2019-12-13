@@ -3,9 +3,9 @@ import { Thing } from "../index";
 const describe = {
   name: "help",
   methods: {
-    help(instance: Thing): String {
-      const acts = instance.getActionKeys();
-      return `You can try the following actions; ${acts.join(", ")}.`;
+    help(ins: Thing): String {
+      const acts = ins.getActionKeys();
+      return `You can ${acts.join(", ")} the ${ins.name}.`;
     }
   },
   actions: {

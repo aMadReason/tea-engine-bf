@@ -23,9 +23,7 @@ class Game implements iGame {
   static get getPubs() {
     return {
       locationChange: "tea-location-change",
-      commandParseCall: "tea-command-parse",
-      commandPriorCall: "tea-command-prior",
-      commandPostCall: "tea-command-post"
+      commandCall: "tea-command"
     };
   }
 
@@ -219,40 +217,35 @@ class Game implements iGame {
       secondThings,
       inventoryThings
     };
-    pubsub.publish(Game.getPubs.commandParseCall, result);
     return result;
   }
 
   command(cmd: String, patterns = this.parserPatterns) {
     const result = this.parseCommand(cmd, patterns);
     const { verb, type, locations, firstThings, inventoryThings } = result;
+    let commandAction = null;
     let valid = false;
-    let response = "";
-
-    pubsub.publish(Game.getPubs.commandPriorCall, { ...result });
 
     if (type === "nav" && locations.length > 0) {
       valid = true;
-      response = locations[0].callAction(verb);
+      commandAction = locations[0].getAction(verb);
     }
 
     if (type === "simple" && firstThings.length > 0) {
       valid = true;
-      response = firstThings[0].callAction(verb);
+      commandAction = firstThings[0].getAction(verb);
     }
 
     if (type === "inventory") {
       valid = true;
-      response = inventoryThings[0].callAction(verb);
+      commandAction = inventoryThings[0].getAction(verb);
     }
 
-    pubsub.publish(Game.getPubs.commandPostCall, {
+    pubsub.publish(Game.getPubs.commandCall, {
       ...result,
       valid,
-      response
+      commandAction
     });
-
-    return response;
   }
 }
 export default Game;

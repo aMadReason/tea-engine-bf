@@ -6,8 +6,11 @@ const gamedata = {
       describedNoun: "golden cup",
       behaviours: ["take"],
       properties: {
+        stateKey: "initial",
         descriptions: {
-          default: "A small golden cup rests on it's side on the floor."
+          initial: "A small golden cup rests on it's side on the floor.",
+          default: "A small golden cup.",
+          dropped: "The golden cup you left here sits on the floor."
         }
       }
     },

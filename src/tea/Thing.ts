@@ -8,6 +8,7 @@ class Thing implements iThing {
   game: iGame;
   locationKey: String; // if null = in inventory
   describedNoun: String;
+  name: String;
   methods: Map<String, Function> = new Map();
   properties: Map<
     String,
@@ -36,6 +37,7 @@ class Thing implements iThing {
     this.game = game;
     this.locationKey = locationKey;
     this.describedNoun = describedNoun;
+    this.name = describedNoun || noun;
     return this;
   }
 
@@ -83,6 +85,10 @@ class Thing implements iThing {
     const method = this.methods.get(methodKey);
     if (method) this.actions.set(verb, methodKey);
     return this;
+  }
+
+  getAction(verb: String) {
+    return () => this.callAction(verb);
   }
 
   getActionKeys() {

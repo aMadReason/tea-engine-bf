@@ -20,18 +20,15 @@ export interface iThing {
   noun: String;
   game: iGame; // eslint-disable-line
   describedNoun: String;
+  name: String;
   methods: Map<String, Function>;
   properties: Map<
     String,
-    | Boolean
-    | Number
-    | String[]
-    | Number[]
-    | iProperties<String>
-    | iProperties<Boolean>
+    Boolean | Number | String[] | Number[] | iProperties<String> | iProperties<Boolean>
   >;
   actions: Map<String, String>; // maps verbs to method key
   callAction: Function;
+  getAction: Function;
   getActionKeys: Function;
   setLocationKey: Function;
 }
@@ -53,12 +50,7 @@ export interface iBehaviour {
   methods: iProperties<Function>;
   properties: Map<
     String,
-    | Boolean
-    | Number
-    | String[]
-    | Number[]
-    | iProperties<String>
-    | iProperties<Boolean>
+    Boolean | Number | String[] | Number[] | iProperties<String> | iProperties<Boolean>
   >;
   actions: iProperties<String>; // maps verbs to method key
   //fn(instance: iThing): iThing;

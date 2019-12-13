@@ -42,7 +42,7 @@ export default {
 
       return desc.replace(
         ins.noun,
-        `<button class="noun" data-noun="${ins.noun}" data-describedNoun="${ins.describedNoun}">${
+        `<button class="noun" data-noun="${ins.noun}" data-described="${ins.describedNoun}">${
           ins.noun
         }</button>`
       );
@@ -54,7 +54,7 @@ export default {
       acts.map(i => {
         response = response.replace(
           i,
-          `<button class="verb" data-verb="${i}"  data-noun="${ins.noun}" data-describedNoun="${
+          `<button class="verb" data-verb="${i}"  data-noun="${ins.noun}" data-described="${
             ins.describedNoun
           }">${i}</button>`
         );
@@ -67,8 +67,8 @@ export default {
     //console.log(this.$refs.thingHolder.querySelectorAll("button.noun"));
     this.$refs.thingHolder.addEventListener("click", e => {
       if (e.target.hasAttribute("data-noun")) {
-        const { noun, describedNoun } = e.target.dataset;
-        const results = this.$root.game.getThingsByNoun(noun, describedNoun, this.things);
+        const { noun, described } = e.target.dataset;
+        const results = this.$root.game.getThingsByNoun(noun, described, this.things);
         if (results.length === 0) return null;
         const instance = results[0];
         this.handleHelp(instance);

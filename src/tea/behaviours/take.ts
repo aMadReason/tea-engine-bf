@@ -4,30 +4,30 @@ const take = {
   name: "take",
   properties: {},
   methods: {
-    take(instance: Thing): String {
-      const key = instance.locationKey;
-      if (key === null) return `${instance.noun} is already in your inventory.`;
-      instance.setLocationKey(null);
+    take(ins: Thing): String {
+      const key = ins.locationKey;
+      if (key === null) return `${ins.name} is already in your inventory.`;
+      ins.setLocationKey(null);
 
-      const stateKey = instance.getProperty("stateKey");
+      const stateKey = ins.getProperty("stateKey");
       if (stateKey && stateKey === "initial") {
-        instance.setProperty("stateKey", "default");
+        ins.setProperty("stateKey", "default");
       }
 
-      return `${instance.noun} added to inventory.`;
+      return `${ins.name} added to inventory.`;
     },
-    drop(instance: Thing): String {
-      const key = instance.locationKey;
-      const loc = instance.game.getActiveLocation();
-      if (key) return `${instance.noun} is not in your inventory.`;
-      instance.setLocationKey(loc.key);
+    drop(ins: Thing): String {
+      const key = ins.locationKey;
+      const loc = ins.game.getActiveLocation();
+      if (key) return `${ins.name} is not in your inventory.`;
+      ins.setLocationKey(loc.key);
 
-      const descriptions = instance.getProperty("descriptions");
+      const descriptions = ins.getProperty("descriptions");
       if (descriptions && "dropped" in descriptions) {
-        instance.setProperty("stateKey", "dropped");
+        ins.setProperty("stateKey", "dropped");
       }
 
-      return `${instance.noun} removed from inventory.`;
+      return `${ins.name} removed from inventory.`;
     }
   },
   actions: {

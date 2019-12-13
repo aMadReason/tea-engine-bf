@@ -7,9 +7,9 @@ const use = {
     usesLeft: 1
   },
   methods: {
-    use(instance: Thing, game: Game): String {
-      const uses = instance.getProperty("uses");
-      let usesLeft = instance.getProperty("usesLeft");
+    use(ins: Thing, game: Game): String {
+      const uses = ins.getProperty("uses");
+      let usesLeft = ins.getProperty("usesLeft");
 
       usesLeft = +usesLeft - 1;
 
