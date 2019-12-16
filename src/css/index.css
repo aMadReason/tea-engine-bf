@@ -16,7 +16,7 @@
   /* Txt */
   --tea-txt-1: #eee;
   --tea-txt-2: #ccc;
-  --tea-txt-3: #111416;
+  --tea-txt-3: #5e686f;
 
   /* General */
   --tea-spacing: 1rem;
@@ -116,6 +116,10 @@ button:focus {
 
 /** Native Overrides **/
 
+hr {
+  border-color: var(--tea-txt-3, grey);
+}
+
 h1 {
   font-size: 160%;
 }
@@ -133,6 +137,12 @@ h5 {
 }
 h6 {
   font-size: 110%;
+}
+
+article > header,
+section > header {
+  border-bottom: 1px solid var(--tea-txt-3, grey);
+  padding-bottom: 0.3rem;
 }
 
 ul,

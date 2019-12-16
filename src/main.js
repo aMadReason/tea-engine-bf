@@ -9,8 +9,8 @@ import gamedata from "./gamedata";
 
 // vue
 import App from "./App.vue";
-import Scene from "./components/Scene";
-import Locations from "./components/Locations";
+import SettingsView from "./views/SettingsView";
+import GameView from "./views/GameView";
 
 // tea engine
 import { travel, take } from "./tea/behaviours";
@@ -30,7 +30,10 @@ Vue.filter("capitalize", function(value) {
 });
 
 const router = new VueRouter({
-  routes: [{ path: "/", component: Scene }, { path: "/locations", component: Locations }]
+  routes: [
+    { label: "Game", icon: "fa fa-home", path: "/", component: GameView },
+    { label: "Settings", icon: "fa fa-cog", path: "/settings", component: SettingsView }
+  ]
 });
 
 new Vue({

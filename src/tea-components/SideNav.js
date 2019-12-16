@@ -7,13 +7,12 @@ class MyElement extends LitElement {
   static get styles() {
     return css`
       .sidebar[data-open] {
-        background: var(--tea-bg-3, #eee);
         position: fixed;
+        top: 0;
+        background: var(--tea-bg-3, #eee);
         width: var(--tea-sidebar-width, 300px);
         max-width: var(--tea-sidebar-maxwidth, initial);
         min-width: var(--tea-sidebar-minwidth, initial);
-        left: 0;
-        top: 0;
         margin: 0;
         height: 100%;
         height: calc(100% + 60px);
@@ -23,8 +22,17 @@ class MyElement extends LitElement {
         overflow-y: auto;
         will-change: transform;
         backface-visibility: hidden;
-        transform: translateX(-105%);
         transition: var(--tea-sidebar-transition, transform 300ms ease);
+      }
+
+      .sidebar[data-position="left"] {
+        left: 0;
+        transform: translateX(-105%);
+      }
+
+      .sidebar[data-position="right"] {
+        right: 0;
+        transform: translateX(105%);
       }
 
       .sidebar[data-open="true"] {
@@ -81,13 +89,15 @@ class MyElement extends LitElement {
   static get properties() {
     return {
       isOpen: { type: String, attribute: "data-open", reflect: true },
-      ariaLabel: { type: String, attribute: "data-label" }
+      ariaLabel: { type: String, attribute: "data-label" },
+      position: { type: String, attribute: "data-position" }
     };
   }
 
   constructor() {
     super();
     this.isOpen = "false";
+    this.position = "left";
     this.ariaLabel = "General";
   }
 
@@ -165,6 +175,7 @@ class MyElement extends LitElement {
         class="sidebar"
         tabindex="-1"
         data-open="${this.isOpen}"
+        data-position="${this.position}"
         @focus=${() => this.open()}
       >
         <div>

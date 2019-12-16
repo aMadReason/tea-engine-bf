@@ -23,8 +23,8 @@ export interface iThing {
   name: String;
   methods: Map<String, Function>;
   properties: Map<
-    String,
-    Boolean | Number | String[] | Number[] | iProperties<String> | iProperties<Boolean>
+    string,
+    boolean | number | string[] | number[] | iProperties<string> | iProperties<boolean>
   >;
   actions: Map<String, String>; // maps verbs to method key
   callAction: Function;

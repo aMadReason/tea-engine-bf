@@ -75,6 +75,10 @@ class Thing implements iThing {
     return this.methods.get(key);
   }
 
+  getMethodKeys() {
+    return [...this.methods.keys()];
+  }
+
   callMethod(key: String, instance: iThing = this) {
     const method = this.methods.get(key);
     if (method) return method(instance);

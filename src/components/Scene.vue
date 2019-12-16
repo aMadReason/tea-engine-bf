@@ -48,7 +48,7 @@ export default {
       );
     },
     handleHelp: function(ins) {
-      let response = ins.callAction("help");
+      let response = ins.callMethod("help");
       const acts = ins.getActionKeys();
 
       acts.map(i => {

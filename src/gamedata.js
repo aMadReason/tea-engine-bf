@@ -6,6 +6,7 @@ const gamedata = {
       describedNoun: "golden cup",
       behaviours: ["take"],
       properties: {
+        filterActionsTo: ["describe", "help", "take", "drop"],
         stateKey: "initial",
         descriptions: {
           initial: "A small golden cup rests on it's side on the floor.",
