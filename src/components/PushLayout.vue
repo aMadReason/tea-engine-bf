@@ -1,5 +1,9 @@
 <template>
-  <div class="full-height">
+  <tea-pushlayout class="full-height">
+    <slot name="content"></slot>
+    <slot name="menu"></slot>
+  </tea-pushlayout>
+  <!-- <div class="full-height">
     <div class="layout">
       <header>
         <slot name="header"></slot>
@@ -11,12 +15,12 @@
 
       <slot name="commandbar"></slot>
     </div>
-  </div>
+  </div>-->
 </template>
 
 <script>
 export default {
-  name: "app-layout",
+  name: "app-pushlayout",
   components: {},
   computed: {},
   data: () => ({}),

@@ -1,5 +1,73 @@
 <template>
   <div class="full-height">
+    <tea-pushlayout ref="pushout">
+      <app-layout>
+        <template v-slot:header>
+          <nav slot="nav">
+            <div class="bar">
+              <button
+                ref="menuButton"
+                aria-controls="sidenav1"
+                aria-label="Open Main Side menu"
+                v-on:click="handleOpen('sidenav1', 'menuButton')"
+                class="float-right"
+              >
+                <i class="fas fa-bars" aria-hidden="true"></i>
+              </button>
+              <div>Tea Engine</div>
+            </div>
+          </nav>
+        </template>
+
+        <template v-slot:content>
+          <app-scene :things="things" :location="location"></app-scene>
+        </template>
+
+        <template v-slot:commandbar>
+          <div class="bar">
+            <app-commander/>
+            <div class="quick-controls">
+              <button
+                class="full-width"
+                ref="locationsButton"
+                aria-controls="sidenav2"
+                aria-label="Open Locations Side menu"
+                v-on:click="handlePushout('locations')"
+              >
+                <i class="fas fa-compass" aria-hidden="true"></i>
+              </button>
+              <button
+                class="full-width"
+                ref="inventoryButton"
+                aria-controls="sidenav2"
+                aria-label="Open Locations Side menu"
+                v-on:click="handlePushout('inventory')"
+              >
+                <i class="fas fa-toolbox" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </template>
+      </app-layout>
+
+      <div slot="menu">
+        <div v-if="activePushout==='locations'">
+          <app-locations :location="location" :locations="locations"></app-locations>
+        </div>
+        <div v-if="activePushout==='inventory'">
+          <app-inventory :inventory="inventory"></app-inventory>
+        </div>
+      </div>
+    </tea-pushlayout>
+
+    <tea-overlaynav id="sidenav1" ref="sidenav1" :data-open="open.sidenav1" data-position="left">
+      <div class="box">
+        <app-nav></app-nav>
+      </div>
+    </tea-overlaynav>
+  </div>
+
+  <!-- <div class="full-height">
     <app-layout>
       <template v-slot:header>
         <nav slot="nav">
@@ -13,7 +81,7 @@
             >
               <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
-            <div>Tea Engine</div>
+            <div>Tea Engine: Settings</div>
           </div>
         </nav>
       </template>
@@ -25,98 +93,40 @@
       <template v-slot:commandbar>
         <div class="bar">
           <app-commander/>
-          <div class="quick-controls">
-            <button
-              class="full-width"
-              ref="locationsButton"
-              aria-controls="sidenav2"
-              aria-label="Open Locations Side menu"
-              v-on:click="handleOpen('sidenav2', 'locationsButton')"
-            >
-              <i class="fas fa-compass" aria-hidden="true"></i>
-            </button>
-            <button
-              class="full-width"
-              ref="inventoryButton"
-              aria-controls="sidenav3"
-              aria-label="Open Inventory Side menu"
-              v-on:click="handleOpen('sidenav3', 'inventoryButton')"
-            >
-              <i class="fas fa-toolbox" aria-hidden="true"></i>
-            </button>
-          </div>
         </div>
       </template>
     </app-layout>
 
     <tea-sidenav id="sidenav1" ref="sidenav1" :data-open="open.sidenav1" data-position="left">
       <div class="box">
-        <app-nav></app-nav>>
+        <app-nav></app-nav>
       </div>
     </tea-sidenav>
-
-    <tea-sidenav id="sidenav2" ref="sidenav2" :data-open="open.sidenav2" data-position="right">
-      <div class="box">
-        <section>
-          <header>
-            <h1>Locations</h1>
-            <small>
-              Currently in the
-              <strong>{{location.noun | capitalize}}</strong>.
-            </small>
-          </header>
-          <ul class="sidebar-list" v-if="locations.length > 0">
-            <li v-for="loc in locations" v-bind:key="loc.name">
-              <button class="full-width" v-on:click="changeLocation(loc)">
-                {{loc.name | capitalize}}
-                <span v-if="location.name === loc.name">
-                  <small>(current location)</small>
-                </span>
-              </button>
-            </li>
-          </ul>
-        </section>
-      </div>
-    </tea-sidenav>
-
-    <tea-sidenav id="sidenav3" ref="sidenav3" :data-open="open.sidenav3" data-position="right">
-      <div class="box">
-        <section>
-          <header>
-            <h1>Inventory</h1>
-          </header>
-          <ul class="sidebar-list" v-if="inventory.length > 0">
-            <li v-for="item in inventory" v-bind:key="item.name">
-              <button class="full-width">{{item.name | capitalize}}</button>
-            </li>
-          </ul>
-        </section>
-      </div>
-    </tea-sidenav>
-  </div>
+  </div>-->
 </template>
 
 <script>
 import Commander from "../components/Commander";
 import Layout from "../components/Layout";
 import Nav from "../components/Nav";
+import Inventory from "../components/Inventory";
+import Locations from "../components/Locations";
+import Scene from "../components/Scene";
 
 export default {
   name: "app-gameview",
   components: {
     "app-layout": Layout,
     "app-commander": Commander,
-    "app-nav": Nav
+    "app-nav": Nav,
+    "app-inventory": Inventory,
+    "app-locations": Locations,
+    "app-scene": Scene
   },
   computed: {
-    // routes: function() {
-    //   return this.$router.options.routes;
-    // },
     open: function() {
       return {
-        sidenav1: this.$refs.sidenav1 && this.$refs.sidenav1.isOpen,
-        sidenav2: this.$refs.sidenav2 && this.$refs.sidenav2.isOpen,
-        sidenav3: this.$refs.sidenav3 && this.$refs.sidenav3.isOpen
+        sidenav1: this.$refs.sidenav1 && this.$refs.sidenav1.isOpen
       };
     },
     location: function() {
@@ -127,27 +137,35 @@ export default {
     },
     inventory: function() {
       return this.$root.game.getThingsByLocationKey(null);
+    },
+    things: function() {
+      return this.$root.game.getActiveThings();
     }
   },
-  props: {
-    source: String
-  },
+  props: {},
   data: () => ({
-    inputCommand: "",
-    msg: [],
-    response: null,
-    drawer: null
+    activePushout: null
   }),
   methods: {
-    setResponse(content) {
-      this.response = content;
-    },
     handleOpen: function(sidenavName, triggerName) {
       this.$refs[sidenavName].openWithTrigger(this.$refs[triggerName] || null);
     },
-    changeLocation(location) {
-      this.$root.game.command(`go to ${location.noun}`);
-      this.$router.push("/");
+    handlePushout(name) {
+      const pushout = this.$refs.pushout;
+      const open = JSON.parse(pushout.isOpen);
+
+      if (!open) {
+        this.activePushout = name;
+        return this.$refs.pushout.open();
+      }
+
+      if (open && name === this.activePushout) {
+        return this.$refs.pushout.close();
+      }
+
+      if (this.open && name !== this.activePushout) {
+        return (this.activePushout = name);
+      }
     }
   },
   mounted() {}

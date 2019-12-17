@@ -23,6 +23,7 @@
   --tea-font-size: 1rem;
   --tea-radius: 0.15rem;
   --tea-transition: 0.5s ease;
+  --tea-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 html,
@@ -165,7 +166,32 @@ input:focus {
   box-shadow: 0 1px 0 0 var(--tea-color-1);
 }
 
+details {
+  padding: 0.5em 0.5em 0;
+}
+
+summary {
+  font-weight: bold;
+  margin: -0.5em -0.5em 0;
+  padding: 0.5em;
+}
+
+details[open] {
+  padding: 0.5em;
+}
+
+details[open] summary {
+  border-bottom: 1px solid #aaa;
+  margin-bottom: 0.5em;
+}
+
 /* Helpers */
+
+button.small {
+  min-height: 1rem;
+  padding: 0.1rem 0.2rem;
+  line-height: 1.1;
+}
 
 .full-width {
   width: 100%;

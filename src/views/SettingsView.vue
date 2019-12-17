@@ -29,11 +29,11 @@
       </template>
     </app-layout>
 
-    <tea-sidenav id="sidenav1" ref="sidenav1" :data-open="open.sidenav1" data-position="left">
+    <tea-overlaynav id="sidenav1" ref="sidenav1" :data-open="open.sidenav1" data-position="left">
       <div class="box">
         <app-nav></app-nav>
       </div>
-    </tea-sidenav>
+    </tea-overlaynav>
   </div>
 </template>
 

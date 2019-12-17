@@ -16,7 +16,7 @@ const describe = {
   },
   actions: {
     describe: "describe",
-    examine: "describe"
+    look: "describe"
   }
 };
 

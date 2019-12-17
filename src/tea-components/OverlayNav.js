@@ -24,21 +24,17 @@ class MyElement extends LitElement {
         backface-visibility: hidden;
         transition: var(--tea-sidebar-transition, transform 300ms ease);
       }
-
       .sidebar[data-position="left"] {
         left: 0;
         transform: translateX(-105%);
       }
-
       .sidebar[data-position="right"] {
         right: 0;
         transform: translateX(105%);
       }
-
       .sidebar[data-open="true"] {
         transform: translateX(0%);
       }
-
       .sidebar[data-open] button.close {
         float: right;
         border: 0;
@@ -53,17 +49,14 @@ class MyElement extends LitElement {
         transition: border 0.3s ease, background 0.5s ease;
         background: transparent;
       }
-
       .sidebar[data-open] button.close:hover {
         cursor: pointer;
         background: var(--tea-bg-2, #000);
       }
-
       .sidebar[data-open] button.close:focus {
         cursor: pointer;
         border: 2px solid var(--tea-txt-2, #000);
       }
-
       [data-sidenav-overlay] {
         position: fixed;
         top: 0;
@@ -78,7 +71,6 @@ class MyElement extends LitElement {
         z-index: 997;
         display: block;
       }
-
       [data-sidenav-overlay="true"] {
         width: 100%;
         opacity: 1;
@@ -194,7 +186,7 @@ class MyElement extends LitElement {
   }
 }
 // Register the new element with the browser.
-const tag = "tea-sidenav";
+const tag = "tea-overlaynav";
 if (window.customElements.get(tag) === undefined) {
   window.customElements.define(tag, MyElement);
 }

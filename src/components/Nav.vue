@@ -5,7 +5,11 @@
     </header>
     <ul class="sidebar-list">
       <li v-for="(r, i) in routes" v-bind:key="i">
-        <button class="full-width" v-on:click="$router.push(r.path)">
+        <button
+          :disabled="route.path === r.path"
+          class="full-width"
+          v-on:click="$router.push(r.path)"
+        >
           <i :class="r.icon" aria-hidden="true"></i>
           {{r.label}}
         </button>
@@ -19,6 +23,9 @@ export default {
   name: "app-nav",
   props: [],
   computed: {
+    route: function() {
+      return this.$router.currentRoute;
+    },
     routes: function() {
       return this.$router.options.routes;
     }

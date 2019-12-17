@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import "./tea-components/SideNav";
-//import "./tea-components/Noun";
+import "./tea-components/OverlayNav";
+import "./tea-components/PushLayout";
 import "./css/bootstrap-reboot.css";
 import "./css/index.css";
 
@@ -11,6 +11,7 @@ import gamedata from "./gamedata";
 import App from "./App.vue";
 import SettingsView from "./views/SettingsView";
 import GameView from "./views/GameView";
+//import Test from "./views/Test";
 
 // tea engine
 import { travel, take } from "./tea/behaviours";
@@ -33,6 +34,7 @@ const router = new VueRouter({
   routes: [
     { label: "Game", icon: "fa fa-home", path: "/", component: GameView },
     { label: "Settings", icon: "fa fa-cog", path: "/settings", component: SettingsView }
+    //{ label: "Test", icon: "fa fa-cog", path: "/test", component: Test }
   ]
 });
 
@@ -42,10 +44,15 @@ new Vue({
     game: g,
     response: ""
   }),
-  mounted: () => {
-    // g.subscribe("tea-location-change", data => {
-    //   console.log(`Changed location from ${data.from.noun} to ${data.to.noun}`);
-    // });
+  methods: {
+    handleInventoryHelp(item) {
+      this.game.command(`help ${item.name}`);
+    },
+    changeLocation(location) {
+      this.game.command(`go to ${location.noun}`);
+      this.$router.push("/");
+    }
   },
+  mounted: () => {},
   render: h => h(App)
 }).$mount("#app");

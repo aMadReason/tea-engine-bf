@@ -3,7 +3,8 @@ import { Thing } from "../index";
 const describe = {
   name: "help",
   properties: {
-    filterActionsTo: []
+    filterActionsTo: [],
+    excludeActionsTo: []
   },
   methods: {
     help(ins: Thing): String {
@@ -14,7 +15,8 @@ const describe = {
     }
   },
   actions: {
-    help: "help"
+    help: "help",
+    examine: "help"
   }
 };
 

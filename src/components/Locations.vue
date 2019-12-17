@@ -1,44 +1,37 @@
 <template>
-  <article>
-    <h1>Locations</h1>
-    <hr>
-
-    <ul v-if="locations && locations.length > 0">
-      <li v-for="(i, idx) in locations" v-bind:key="idx+'-'+i.noun">
-        <button
-          v-on:click="changeLocation(i)"
-          class="full-width spaced"
-        >Go to {{i.noun | capitalize}}</button>
-      </li>
-    </ul>
-  </article>
+  <div class="box">
+    <section>
+      <header>
+        <h1>Locations</h1>
+        <small>
+          Currently in the
+          <strong>{{location.noun | capitalize}}</strong>.
+        </small>
+      </header>
+      <ul class="sidebar-list" v-if="locations.length > 0">
+        <li v-for="loc in locations" v-bind:key="loc.name">
+          <button class="full-width" v-on:click="$root.changeLocation(loc)">
+            {{loc.name | capitalize}}
+            <span v-if="location.name === loc.name">
+              <small>(current location)</small>
+            </span>
+          </button>
+        </li>
+      </ul>
+    </section>
+  </div>
 </template>
 
 <script>
 export default {
   name: "app-locations",
-  props: [],
-  computed: {
-    location: function() {
-      return this.$root.game.getActiveLocation();
-    },
-    locations: function() {
-      return this.$root.game.locations;
-    }
-  },
+  components: {},
+  props: ["locations", "location"],
   data: () => ({}),
-  methods: {
-    changeLocation(location) {
-      this.$root.game.command(`go to ${location.noun}`)
-      this.$router.push("/");
-    }
-  }
+  methods: {}
 };
 </script>
 
 <style scoped>
-.spaced {
-  margin: calc(var(--tea-spacing, 0.5rem)/2) 0;
-}
 </style>
 
