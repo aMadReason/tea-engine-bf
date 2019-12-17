@@ -11,7 +11,6 @@ import gamedata from "./gamedata";
 import App from "./App.vue";
 import SettingsView from "./views/SettingsView";
 import GameView from "./views/GameView";
-//import Test from "./views/Test";
 
 // tea engine
 import { travel, take } from "./tea/behaviours";
@@ -34,7 +33,6 @@ const router = new VueRouter({
   routes: [
     { label: "Game", icon: "fa fa-home", path: "/", component: GameView },
     { label: "Settings", icon: "fa fa-cog", path: "/settings", component: SettingsView }
-    //{ label: "Test", icon: "fa fa-cog", path: "/test", component: Test }
   ]
 });
 
