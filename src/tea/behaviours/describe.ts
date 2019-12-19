@@ -1,22 +1,27 @@
 import { Thing } from "../index";
 
+// gives brief description of thing depending on its state.
+
 const describe = {
   name: "describe",
   properties: {
     stateKey: "default",
     descriptions: {
-      default: "Default."
+      default: "It's a {name}"
     }
   },
   methods: {
     describe(ins: Thing): String {
-      const stateKey = ins.getProperty("stateKey");
-      return ins.getProperty("descriptions")[stateKey];
+      const name = ins.name.toString();
+      const stateKey = ins.getProperty("stateKey").toString();
+      const descriptions = ins.getProperty("descriptions");
+      let description = descriptions[stateKey];
+      if (!description) description = descriptions["default"];
+      return description.replace("{name}", name);
     }
   },
   actions: {
-    describe: "describe",
-    look: "describe"
+    describe: "describe"
   }
 };
 

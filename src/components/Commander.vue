@@ -1,6 +1,14 @@
 <template>
   <div class="commander">
-    <div class="response" ref="responseEl" v-html="response" role="menu" tabindex="0"></div>
+    <div
+      aria-live="assertive"
+      aria-atomic="true"
+      class="response"
+      ref="responseEl"
+      v-html="response"
+      role="menu"
+      tabindex="0"
+    ></div>
     <form class="field" v-on:submit="e => submitCommand(e)">
       <input v-model="inputCommand" placeholder id="cmd" type="text">
       <label for="cmd">Command</label>
@@ -12,17 +20,12 @@
 </template>
 
 <script>
-import HowlerChannel from "../tea/modules/HowlerChannel";
-import { openClose, atmospherics } from "../sounds.js";
-
-const effects = new HowlerChannel({ fade: true }).addSounds(openClose);
-const tracks = new HowlerChannel({ fade: true }).addSounds(atmospherics);
-
 export default {
   name: "app-commander",
   props: ["things"],
   data: () => ({
-    inputCommand: ""
+    inputCommand: "",
+    msg: []
   }),
   computed: {
     response: {
@@ -41,62 +44,83 @@ export default {
       this.inputCommand = "";
     },
 
-    formatHelp: function(data) {
+    formatHelp: function(response, data) {
+      const { firstThings: fThings, inventoryThings: iThings } = data;
+      const fThing = !fThings || fThings.length === 0 ? false : true;
+      const iThing = !iThings || iThings.length === 0 ? false : true;
+
+      if (!fThing && !iThing) return null;
+
       const ins = data.firstThings[0] || data.inventoryThings[0];
-      let response = data.commandAction();
       const acts = ins.getActionKeys();
-      acts.map(i => {
-        response = response.replace(
-          i,
-          `<button class="verb small" data-named="${ins.name}" data-verb="${i}">${i}</button>`
-        );
-      });
-      this.response = response;
-    },
 
-    handleSounds(data) {
-      const { verb, valid } = data;
-      const takeActs = "take|pick|drop|leave";
-      const goActs = "go|move";
-
-      if (valid) {
-        if (takeActs.includes(verb)) effects.play("handleSmallLeather");
-        if (goActs.includes(verb)) effects.play("doorClose_3");
-      }
+      const words = acts.map(i => ({ noun: ins.noun, named: ins.name, verb: i }));
+      this.$root.formatResponse(response, words, "verb");
     },
 
     handleInventory() {
       const inventory = this.$root.game.getThingsByLocationKey();
-      if (inventory.length === 0) return (this.response = `You aren't carrying anything.`);
-      return (this.response = `The items you are carrying are ${inventory
-        .map(i => `a ${i.describedNoun || i.noun}`)
-        .join(", ")}.`);
+      const words = inventory.map(i => ({ noun: i.noun, named: i.name, verb: "help" }));
+      let response = `You aren't carrying anything.`;
+
+      if (inventory.length === 1) {
+        response = `Your inventory contains ${inventory.map(i => `a ${i.name}`)}.`;
+      }
+
+      if (inventory.length > 1) {
+        const last = inventory.pop();
+        response = `Your inventory contains ${inventory.map(i => `a ${i.name}`)} and a ${
+          last.name
+        }.`;
+      }
+
+      this.$root.formatResponse(response, words, "named");
+    },
+
+    handleLocations() {
+      const locations = this.$root.game.getLocationNouns();
+      const words = locations.map(i => ({ noun: i, named: i, verb: "go" }));
+      let response = `There are no locations for you to travel to.`;
+
+      if (locations.length === 1) {
+        response = `You can go to ${locations.map(i => `the ${i}`)}.`;
+      }
+
+      if (locations.length > 1) {
+        const last = locations.pop();
+        response = `You can go to ${locations.map(i => `the ${i}`)} or the ${last}.`;
+      }
+
+      this.$root.formatResponse(response, words, "noun");
     },
 
     commandHook(data) {
-      const { verb, valid, inventoryThings } = data;
-      this.msg = data.msg;
+      const { verb, valid, type } = data;
+      let response = data.commandAction ? data.commandAction() : "";
+      // if (!valid) return (this.response = response);
 
-      this.handleSounds(data);
-      if (data.msg && data.msg.length > 0) this.response = data.msg.join(" ");
+      this.$root.handleSounds(data);
 
+      if (data.command === "locations") return this.handleLocations();
       if (data.strictCommand === "inventory") return this.handleInventory();
 
-      if (valid && ["help", "examine"].includes(verb)) {
-        return this.formatHelp(data);
+      if (["help", "examine"].includes(verb)) {
+        return this.formatHelp(response, data);
       }
 
-      if (valid) return (this.response = data.commandAction());
+      //if (!valid) return (this.response = response);
+      this.response = response;
     }
   },
   mounted() {
     this.$root.game.subscribe("tea-command", data => this.commandHook(data));
     this.$root.game.subscribe("tea-location-change", data => this.commandHook(data));
-    tracks.play("low");
 
     this.$refs.responseEl.addEventListener("click", e => {
       const { verb, named } = e.target.dataset;
-      this.$root.game.command(`${verb} ${named}`);
+      if (!verb && !named) return undefined;
+      const cmd = `${verb} ${named}`;
+      this.$root.game.command(cmd);
     });
   }
 };

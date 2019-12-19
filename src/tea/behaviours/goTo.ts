@@ -1,7 +1,7 @@
 import { Thing } from "../index";
 
-const travel = {
-  name: "travel",
+const behaviour = {
+  name: "goTo", // assignable to locations
   methods: {
     travel(ins: Thing): String {
       ins.game.setLocationByKey(ins.key);
@@ -15,5 +15,5 @@ const travel = {
   }
 };
 
-Object.freeze(travel);
-export default travel;
+Object.freeze(behaviour);
+export default behaviour;

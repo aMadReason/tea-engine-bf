@@ -7,7 +7,7 @@
           class="small"
           v-for="act in actions"
           v-bind:key="act"
-          v-on:click="handleAction(act)"
+          v-on:click="$root.handleAction(act, thing.name)"
         >{{act}}</button>
       </div>
       <details>
@@ -31,12 +31,7 @@ export default {
     }
   },
   data: () => ({}),
-  methods: {
-    handleAction: function(verb) {
-      console.log(`${verb} ${this.thing.name}`);
-      this.$root.game.command(`${verb} ${this.thing.name}`);
-    }
-  }
+  methods: {}
 };
 </script>
 

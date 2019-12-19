@@ -3,6 +3,8 @@ import { Thing } from "./index";
 
 class ThingComposer {
   static resolve(thing: Thing, data: iThingData | iBehaviour, Game: iGame) {
+    if (!data) return thing;
+
     const { properties, methods, actions } = data;
 
     if (properties) {

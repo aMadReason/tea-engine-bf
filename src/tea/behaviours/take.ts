@@ -1,6 +1,6 @@
 import { Thing } from "../index";
 
-const take = {
+const behaviour = {
   name: "take",
   properties: {},
   methods: {
@@ -39,5 +39,5 @@ const take = {
   }
 };
 
-Object.freeze(take);
-export default take;
+Object.freeze(behaviour);
+export default behaviour;

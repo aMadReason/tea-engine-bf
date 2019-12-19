@@ -12,7 +12,7 @@ class Thing implements iThing {
   methods: Map<String, Function> = new Map();
   properties: Map<
     String,
-    Number | String[] | Number[] | iProperties<String> | iProperties<Boolean>
+    String | Number | String[] | Number[] | iProperties<String> | iProperties<Boolean>
   > = new Map();
   actions: Map<String, String> = new Map(); // maps verbs to method key
 
@@ -91,8 +91,12 @@ class Thing implements iThing {
     return this;
   }
 
-  getAction(verb: String) {
-    return () => this.callAction(verb);
+  getAction(verb: string) {
+    if (this.actions.has(verb)) return () => this.callAction(verb);
+    return () =>
+      `The action '${verb}' isn't valid for the ${this.name}. Try 'help ${
+        this.name
+      }' for a list of actions.`;
   }
 
   getActionKeys() {

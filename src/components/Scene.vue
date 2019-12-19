@@ -5,8 +5,8 @@
     {{describeLocation()}}
     <hr>
 
-    <section ref="thingHolder" tabindex="0" role="menu">
-      <ul v-if="things && things.length > 0">
+    <section>
+      <ul ref="thingHolder" v-if="things && things.length > 0">
         <li
           v-for="(i, idx) in things"
           v-bind:key="idx+'-'+i.noun"
@@ -25,11 +25,10 @@ export default {
   data: () => ({}),
   methods: {
     describeLocation: function() {
-      return this.location.callAction("describe");
+      return this.location.callMethod("describe");
     },
     addNounControlsToDesc: function(ins) {
-      const desc = ins.callAction("describe");
-      console.log(desc, ins.noun);
+      const desc = ins.callMethod("describe");
       return desc.replace(
         ins.noun,
         `<button class="small" data-named="${ins.name}">${ins.noun}</button>`

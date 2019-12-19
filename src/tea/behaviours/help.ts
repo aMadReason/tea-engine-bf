@@ -1,6 +1,6 @@
 import { Thing } from "../index";
 
-const describe = {
+const behaviour = {
   name: "help",
   properties: {
     filterActionsTo: [],
@@ -11,6 +11,11 @@ const describe = {
       const allowedActs = ins.getProperty("filterActionsTo");
       let acts = ins.getActionKeys();
       if (allowedActs && allowedActs.length > 0) acts = acts.filter(i => allowedActs.includes(i));
+
+      if (acts.length > 1) {
+        const last = acts.pop();
+        return `You can ${acts.join(", ")} or ${last} the ${ins.name}.`;
+      }
       return `You can ${acts.join(", ")} the ${ins.name}.`;
     }
   },
@@ -20,5 +25,5 @@ const describe = {
   }
 };
 
-Object.freeze(describe);
-export default describe;
+Object.freeze(behaviour);
+export default behaviour;

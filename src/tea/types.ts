@@ -23,8 +23,8 @@ export interface iThing {
   name: String;
   methods: Map<String, Function>;
   properties: Map<
-    string,
-    boolean | number | string[] | number[] | iProperties<string> | iProperties<boolean>
+    String,
+    String | Number | String[] | Number[] | iProperties<String> | iProperties<Boolean>
   >;
   actions: Map<String, String>; // maps verbs to method key
   callAction: Function;
@@ -65,6 +65,7 @@ export interface iGame {
   setLocationByKey: Function;
   getActiveLocation: Function;
   getThingsByLocationKey: Function;
+  getLocationByKey: Function;
 }
 
 export interface iGameData {

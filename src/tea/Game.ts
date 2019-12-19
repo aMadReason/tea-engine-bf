@@ -2,8 +2,7 @@ import { iThing, iGame, iBehaviour, iThingData, iGameData } from "./types";
 import { ThingComposer } from "./index";
 import pubsub from "./modules/pubsub";
 import commandParser from "./modules/commandParser";
-import describe from "./behaviours/describe";
-import help from "./behaviours/help";
+import { describe, help, examine } from "./behaviours";
 
 class Game implements iGame {
   location: String = null;
@@ -28,7 +27,7 @@ class Game implements iGame {
   }
 
   static get defaultBehaviours() {
-    return [describe, help]; // behaviours here are set by default
+    return [describe, help, examine]; // behaviours here are set by default
   }
 
   subscribe(eventName: string, callback: Function) {
@@ -109,6 +108,10 @@ class Game implements iGame {
 
   getLocations() {
     return this.locations;
+  }
+
+  getLocationNouns() {
+    return this.locations.map(l => l.noun);
   }
 
   registerBehaviour(behaviour: iBehaviour) {
@@ -222,8 +225,8 @@ class Game implements iGame {
 
   command(cmd: String, patterns = this.parserPatterns) {
     const result = this.parseCommand(cmd, patterns);
-    const { verb, type, locations, firstThings, inventoryThings } = result;
-    let commandAction = null;
+    const { verb, type, locations, firstThings, inventoryThings, strictCommand, msg } = result;
+    let commandAction = () => `Invalid command: "${strictCommand}"`;
     let valid = false;
 
     if (type === "nav" && locations.length > 0) {
@@ -239,6 +242,11 @@ class Game implements iGame {
     if (type === "inventory") {
       valid = true;
       commandAction = inventoryThings[0].getAction(verb);
+    }
+
+    if (msg && msg.length > 0) {
+      valid = false;
+      commandAction = () => msg.join(" ");
     }
 
     pubsub.publish(Game.getPubs.commandCall, {

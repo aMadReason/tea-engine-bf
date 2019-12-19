@@ -5,11 +5,7 @@
         <h1>Inventory</h1>
       </header>
       <ul class="sidebar-list" v-if="inventory.length > 0">
-        <li
-          v-for="item in inventory"
-          v-bind:key="item.name"
-          v-on:click="$root.handleInventoryHelp(item)"
-        >
+        <li v-for="item in inventory" v-bind:key="item.name">
           <app-invitem :thing="item"></app-invitem>
         </li>
       </ul>

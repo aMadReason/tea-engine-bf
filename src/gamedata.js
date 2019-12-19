@@ -1,17 +1,44 @@
 const gamedata = {
   things: [
     {
+      noun: "door",
+      locationKey: "deck",
+      behaviours: ["usePortal"],
+      properties: {
+        filterActionsTo: ["use"],
+        portalTo: "cabin",
+        descriptions: {
+          default: "A door leading to the cabin."
+        }
+      }
+    },
+    {
+      noun: "door",
+      locationKey: "cabin",
+      behaviours: ["usePortal"],
+      properties: {
+        filterActionsTo: ["use"],
+        portalTo: "deck",
+        descriptions: {
+          default: "A door leading to the deck."
+        }
+      }
+    },
+    {
       noun: "cup",
       locationKey: "cabin",
       describedNoun: "golden cup",
       behaviours: ["take"],
       properties: {
-        filterActionsTo: ["describe", "help", "take", "drop"],
+        filterActionsTo: ["take", "drop", "examine"],
         stateKey: "initial",
         descriptions: {
           initial: "A small golden cup rests on it's side on the floor.",
           default: "A small golden cup.",
           dropped: "The golden cup you left here sits on the floor."
+        },
+        details: {
+          default: "The {name} is made of plastic... disapointing."
         }
       }
     },
@@ -21,6 +48,7 @@ const gamedata = {
       describedNoun: "red book",
       behaviours: ["take"],
       properties: {
+        filterActionsTo: ["take", "drop", "examine"],
         descriptions: {
           default: "A shabby red book rests haphazardly on the ground."
         }
@@ -32,6 +60,7 @@ const gamedata = {
       describedNoun: "green book",
       behaviours: ["take"],
       properties: {
+        filterActionsTo: ["take", "drop", "examine"],
         descriptions: {
           default: "A shabby green book rests haphazardly on the ground."
         }
@@ -42,6 +71,7 @@ const gamedata = {
       locationKey: "deck",
       behaviours: ["take"],
       properties: {
+        filterActionsTo: ["take", "drop", "examine"],
         stateKey: "initial",
         descriptions: {
           initial: "A large coil of rope is hung on the wall.",
@@ -55,7 +85,7 @@ const gamedata = {
     {
       key: "cabin",
       noun: "cabin",
-      behaviours: ["travel"],
+      behaviours: ["goTo"],
       properties: {
         descriptions: {
           default: "The engine purrs constantly in the background. "
@@ -65,7 +95,7 @@ const gamedata = {
     {
       key: "deck",
       noun: "deck",
-      behaviours: ["travel"],
+      behaviours: ["goTo"],
       properties: {
         descriptions: {
           default:

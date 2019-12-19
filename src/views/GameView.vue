@@ -14,13 +14,20 @@
               >
                 <i class="fas fa-bars" aria-hidden="true"></i>
               </button>
-              <div>Tea Engine</div>
+              <div>Tea Engine: Prototype (not even alpha)</div>
             </div>
           </nav>
         </template>
 
         <template v-slot:content>
-          <app-scene :things="things" :location="location"></app-scene>
+          <div
+            aria-live="polite"
+            role="region"
+            aria-relevent="additions removals text"
+            tabindex="0"
+          >
+            <app-scene :things="things" :location="location"></app-scene>
+          </div>
         </template>
 
         <template v-slot:commandbar>
