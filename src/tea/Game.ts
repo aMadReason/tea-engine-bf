@@ -164,7 +164,7 @@ class Game implements iGame {
 
   parseCommand(cmd: String, patterns = this.parserPatterns) {
     const msg = [];
-    const parserResult = commandParser(cmd, patterns);
+    const parserResult = commandParser(cmd.toLocaleLowerCase(), patterns);
     const { nouns, verbs, described } = parserResult;
     const verb = verbs[0];
     const locations = this.getLocationsByNoun(nouns[0], described[0]);

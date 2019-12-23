@@ -1,9 +1,9 @@
 <template>
   <article>
-    <h1>{{ location.noun | capitalize}}</h1>
-    <hr>
-    {{describeLocation()}}
-    <hr>
+    <header>
+      <h1>{{ location.noun | capitalize}}</h1>
+    </header>
+    <p>{{describeLocation()}}</p>
 
     <section>
       <ul ref="thingHolder" v-if="things && things.length > 0">

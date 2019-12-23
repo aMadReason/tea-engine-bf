@@ -5,14 +5,23 @@
     </header>
     <ul class="sidebar-list">
       <li v-for="(r, i) in routes" v-bind:key="i">
-        <button
+        <router-link class="full-width inline block" :to="r.path">
+          <i :class="r.icon" aria-hidden="true"></i>
+          {{r.label}}
+        </router-link>
+
+        <!-- <span v-if="route.path === r.path" class="full-width inline block">
+          <i :class="r.icon" aria-hidden="true"></i>
+          {{r.label}}
+        </span>-->
+        <!-- <button
           :disabled="route.path === r.path"
           class="full-width"
           v-on:click="$router.push(r.path)"
         >
           <i :class="r.icon" aria-hidden="true"></i>
           {{r.label}}
-        </button>
+        </button>-->
       </li>
     </ul>
   </section>
@@ -31,7 +40,17 @@ export default {
     }
   },
   data: () => ({}),
-  methods: {}
+  methods: {
+    renderLink(item) {
+      if (this.route.path !== item.path) {
+        return (
+          <router-link class="full-width" to="r.path">
+            Go to Foo
+          </router-link>
+        );
+      }
+    }
+  }
 };
 </script>
 

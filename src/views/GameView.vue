@@ -67,7 +67,13 @@
       </div>
     </tea-pushlayout>
 
-    <tea-overlaynav id="sidenav1" ref="sidenav1" :data-open="open.sidenav1" data-position="left">
+    <tea-overlaynav
+      id="sidenav1"
+      ref="sidenav1"
+      aria-label="Main Navigation"
+      :data-open="open.sidenav1"
+      data-position="left"
+    >
       <div class="box">
         <app-nav></app-nav>
       </div>
@@ -180,4 +186,11 @@ export default {
 </script>
 
 <style>
+.bar > .quick-controls {
+  margin: 0 2px;
+}
+
+.quick-controls > button {
+  margin-bottom: calc(var(--tea-spacing) / 2);
+}
 </style>

@@ -72,15 +72,7 @@ export default {
 .layout .content {
   flex: 1;
   overflow-y: auto;
-
 }
 
-.quick-controls {
-  margin-left: 0;
-}
-
-.quick-controls > button {
-  margin: 1px 0;
-}
 </style>
 

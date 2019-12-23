@@ -74,9 +74,23 @@ const gamedata = {
         filterActionsTo: ["take", "drop", "examine"],
         stateKey: "initial",
         descriptions: {
-          initial: "A large coil of rope is hung on the wall.",
-          default: "A large coil of rope.",
-          dropped: "A large coil of rope sits on the floor."
+          initial: "A small coil of rope is hung on the wall.",
+          default: "A small coil of rope.",
+          dropped: "A small coil of rope sits on the floor."
+        }
+      }
+    },
+    {
+      noun: "rooope",
+      locationKey: "deck",
+      behaviours: ["take"],
+      properties: {
+        filterActionsTo: ["take", "drop", "examine"],
+        stateKey: "initial",
+        descriptions: {
+          initial: "A large coil of rooope is hung on the wall.",
+          default: "A large coil of rooope.",
+          dropped: "A large coil of rooope sits on the floor."
         }
       }
     }

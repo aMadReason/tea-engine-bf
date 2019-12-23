@@ -81,7 +81,7 @@ class MyElement extends LitElement {
   static get properties() {
     return {
       isOpen: { type: String, attribute: "data-open", reflect: true },
-      ariaLabel: { type: String, attribute: "data-label" },
+      ariaLabel: { type: String, attribute: "aria-label" },
       position: { type: String, attribute: "data-position" }
     };
   }
